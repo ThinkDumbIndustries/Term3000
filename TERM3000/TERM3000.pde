@@ -60,6 +60,8 @@ void keyPressed() {
   else if (keyCode == DOWN)  grid.setLine(grid.current_line + 1, false);
   else if (key == '+') grid.setTilesPerLine(grid.TILES_PER_LINE - 1, false);
   else if (key == '-') grid.setTilesPerLine(grid.TILES_PER_LINE + 1, false);
-  else if (keyCode == 34) grid.setLine(grid.current_line + grid.LINES_PER_SCREEN - 1, false);
-  else if (keyCode == 33) grid.setLine(grid.current_line - grid.LINES_PER_SCREEN + 1, false);
+  else if (keyCode == 34) grid.setLine(grid.current_line + grid.LINES_PER_SCREEN - 1, false); // Page Up
+  else if (keyCode == 33) grid.setLine(grid.current_line - grid.LINES_PER_SCREEN + 1, false); // Page Down
+  else if (keyCode == 36) grid.setLine(0, false);             // Home
+  else if (keyCode == 35) grid.setLine(grid.MAX_LINE, false); // End
 }

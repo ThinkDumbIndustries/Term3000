@@ -123,7 +123,7 @@ class ThumbnailWorker extends Thread {
 
         String runtimeClassName = tile.tfile.getClass().getSimpleName();
         if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
-        else if (false && runtimeClassName.equals("TMovie")) {
+        else if (runtimeClassName.equals("TMovie")) {
           // Movie stuffs!
           Movie mov = new Movie(SKETCH, ROOT + "/" + tile.tfile.location);
           mov.play();
