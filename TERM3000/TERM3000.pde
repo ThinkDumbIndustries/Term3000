@@ -1,4 +1,5 @@
-String ROOT = "C:/Users/felix/Pictures/Photos";
+//String ROOT = "C:/Users/felix/Pictures/Photos";
+String ROOT = "C:/Users/Maximilien/Pictures/Photos";
 
 int MAX_THUMBNAIL_WORKERS = 4;
 
@@ -6,11 +7,11 @@ TileGrid grid;
 
 void setup() {
   noStroke();
-  //size(500, 300);
-  fullScreen(2);
+  size(500, 300);
+  //fullScreen(2);
 
   setupThumbnailWorkers();
-  loadImages();
+  loadFiles();
   grid = new TileGrid(width, height, 5);
   noLoop();
 }
@@ -24,10 +25,12 @@ void draw() {
   //fill(0, 40);
   //rect(0, 0, width, height);
   grid.display();
+  pushStyle();
   fill(255);
   textSize(20);
   textAlign(LEFT, TOP);
   text(frameCount, 0, 0);
+  popStyle();
 }
 
 void mouseWheel(MouseEvent event) {

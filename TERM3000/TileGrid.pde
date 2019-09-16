@@ -18,17 +18,17 @@ class TileGrid {
 
   TileGrid(int _GRID_WIDTH, int _GRID_HEIGHT, int _TILES_PER_LINE) {
     //setupColorTiles();
-    setupImageTiles(images);
+    setupTiles(files);
 
     this.GRID_WIDTH = _GRID_WIDTH;
     this.GRID_HEIGHT = _GRID_HEIGHT;
     setTilesPerLine(_TILES_PER_LINE, true);
   }
 
-  void setupImageTiles(TImage[] images) {
-    tiles = new Tile[images.length];
-    for (int i = 0; i < tiles.length; i++) {
-      tiles[i] = new ImageTile(images[i], i);
+  void setupTiles(TFile[] files) {
+    tiles = new Tile[files.length];
+    for (int i = 0; i < files.length; i++) {
+      tiles[i] = files[i].makeTile(i);
     }
   }
 
