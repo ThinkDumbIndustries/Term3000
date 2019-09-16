@@ -15,6 +15,7 @@ void loadFiles() {
 TFile createFile(String path) {
   String ext = path.substring(path.indexOf('.')).toLowerCase();
   if (extIsImage(ext)) return new TImage(path);
+  else if (extIsMovie(ext)) return new TMovie(path);
   return new NoFile(path);
 }
 
@@ -24,6 +25,10 @@ boolean extIsImage(String ext) {
     ext.equals(".png") ||
     ext.equals(".gif") ||
     ext.equals(".tga");
+}
+
+boolean extIsMovie(String ext) {
+  return ext.equals(".mov");
 }
 
 abstract class TFile {
@@ -44,7 +49,15 @@ class NoFile extends TFile {
   }
 }
 
-class TImage extends TFile {
+abstract class TThumbnailable extends TFile {
+  String getThumbnailAbsoluteLocation() {
+    int indx = location.indexOf('.');
+    return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
+    //return ROOT + "/thumbnailstif/" + location.substring(0, indx) + ".tif";
+  }
+}
+
+class TImage extends TThumbnailable {
   TImage(String _location) {
     this.location = _location;
   }
@@ -52,10 +65,14 @@ class TImage extends TFile {
   ImageTile makeTile(int id) {
     return new ImageTile(this, id);
   }
+}
 
-  String getThumbnailAbsoluteLocation() {
-    int indx = location.indexOf('.');
-    return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
-    //return ROOT + "/thumbnailstif/" + location.substring(0, indx) + ".tif";
+class TMovie extends TThumbnailable {
+  TMovie(String _location) {
+    this.location = _location;
+  }
+
+  ImageTile makeTile(int id) {
+    return null; //new MovieTile(this, id);
   }
 }
