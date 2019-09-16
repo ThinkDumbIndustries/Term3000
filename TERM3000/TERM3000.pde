@@ -8,19 +8,25 @@ TileGrid grid;
 PApplet SKETCH = this;
 
 void setup() {
-  noStroke();
+  //noStroke();
   size(500, 300);
   //fullScreen();
 
   setupThumbnailWorkers();
   loadFiles();
   grid = new TileGrid(width, height, 5);
-  noLoop();
 }
 
 boolean repaint_background = true;
 
 void draw() {
+  if (!reedraw) {
+    noLoop();
+    return;
+  } 
+  loop();
+  reedraw = false;
+  // Do the actual redraw
   if (repaint_background) background(0);
   repaint_background = false;
   //noStroke();
@@ -35,15 +41,21 @@ void draw() {
   popStyle();
 }
 
+boolean reedraw = true;
+void reedraw() {
+  reedraw = true;
+  redraw();
+}
+
 void mouseWheel(MouseEvent event) {
   grid.setLine(constrain(event.getCount(), -1, 1) + grid.current_line, false);
 }
 
-void keyPressed() { 
+void keyPressed() {
   if (key == 'r') {
     for (int i = 0; i < grid.tiles.length; i++) grid.tiles[i].repaint = true;
     repaint_background = true;
-    redraw();
+    reedraw();
   } else if (keyCode == UP) grid.setLine(grid.current_line - 1, false);
   else if (keyCode == DOWN)  grid.setLine(grid.current_line + 1, false);
   else if (key == '+') grid.setTilesPerLine(grid.TILES_PER_LINE - 1, false);

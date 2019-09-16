@@ -1,3 +1,5 @@
+final int MIN_SCROLL_BAR_WIDTH = 10;
+
 class TileGrid {
   int TILES_PER_LINE;
   int GRID_WIDTH, GRID_HEIGHT;
@@ -50,9 +52,8 @@ class TileGrid {
     int OLD_TILES_PER_LINE = TILES_PER_LINE;
     this.TILES_PER_LINE = _TILES_PER_LINE;
 
-    SCROLL_BAR_WIDTH = 10;
-
-    TILE_WIDTH = (GRID_WIDTH - SCROLL_BAR_WIDTH) / TILES_PER_LINE;
+    setOnscreenTilesVisibleTo(false);
+    TILE_WIDTH = (GRID_WIDTH - MIN_SCROLL_BAR_WIDTH) / TILES_PER_LINE;
     SCROLL_BAR_WIDTH = GRID_WIDTH - TILE_WIDTH * TILES_PER_LINE;
     TILE_HEIGHT = int(TILE_WIDTH * IMAGE_RATIO);
     LINES_PER_SCREEN = 1 + (GRID_HEIGHT - 1) / TILE_HEIGHT;
@@ -68,24 +69,22 @@ class TileGrid {
     line = constrain(line, 0, MAX_LINE);
     if (line == current_line && !force) return;
     repaint_background = true;
-    for (int j = 0; j < LINES_PER_SCREEN; j++) {
-      for (int i = 0; i < TILES_PER_LINE; i++) {
-        int id = (j + current_line) * TILES_PER_LINE + i;
-        if (id >= tiles.length) break;
-        tiles[id].visible = false;
-      }
-    }
+    setOnscreenTilesVisibleTo(false);
     current_line = line;
+    setOnscreenTilesVisibleTo(true);
     for (int i = 0; i < tiles.length; i++) tiles[i].repaint = true;
+    bar.location = current_line;
+    reedraw();
+  }
+
+  void setOnscreenTilesVisibleTo(boolean visible_state) {
     for (int j = 0; j < LINES_PER_SCREEN; j++) {
       for (int i = 0; i < TILES_PER_LINE; i++) {
         int id = (j + current_line) * TILES_PER_LINE + i;
         if (id >= tiles.length) break;
-        tiles[id].visible = true;
+        tiles[id].visible = visible_state;
       }
     }
-    bar.location = current_line;
-    redraw();
   }
 
   void display() {

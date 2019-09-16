@@ -97,7 +97,7 @@ class ThumbnailWorker extends Thread {
   }
 
   void sleeep(int milis) {
-    if (tile == null) try {
+    try {
       sleep(milis);
     }
     catch(Exception e) {
@@ -108,15 +108,11 @@ class ThumbnailWorker extends Thread {
     while (true) {
       for (int i = 0; tile == null && i < 100; i++) {
         tile = pollNextThumbabletileToLoad();
-        sleeep(10);
+        if (tile == null) sleeep(10);
       }
       while (tile == null) {
         tile = pollNextThumbabletileToLoad();
-        if (tile == null) try {
-          sleeep(1000);
-        }
-        catch(Exception e) {
-        }
+        if (tile == null) sleeep(1000);
       }
 
       tile.workerID = this.workerID;
@@ -127,7 +123,7 @@ class ThumbnailWorker extends Thread {
 
         String runtimeClassName = tile.tfile.getClass().getSimpleName();
         if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
-        else if (runtimeClassName.equals("TMovie")) {
+        else if (false && runtimeClassName.equals("TMovie")) {
           // Movie stuffs!
           Movie mov = new Movie(SKETCH, ROOT + "/" + tile.tfile.location);
           mov.play();
@@ -173,9 +169,6 @@ class ThumbnailWorker extends Thread {
         tile.thumbnail = loadImg(thumbnail.getAbsolutePath());
         setStatus(tile.DONE);
       }
-
-
-
       tile = null;
     }
   }
@@ -183,7 +176,7 @@ class ThumbnailWorker extends Thread {
   void setStatus(int status) {
     tile.status = status;
     tile.repaint = true;
-    if (tile.visible) redraw();
+    if (tile.visible) reedraw();
   }
 
   PImage loadImg(String str) {
