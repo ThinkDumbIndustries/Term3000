@@ -2,7 +2,7 @@ TFile[] files;
 
 void loadFiles() {
   File folder = new File(ROOT + "/2014/08-Aout");
-  println(folder.getAbsolutePath());
+  println("Looking for files in: " + folder.getAbsolutePath());
   File[] children = folder.listFiles();
   files = new TFile[children.length];
   for (int i = 0; i < children.length; i++) {
@@ -15,7 +15,7 @@ void loadFiles() {
 TFile createFile(String path) {
   String ext = path.substring(path.indexOf('.')).toLowerCase();
   if (extIsImage(ext)) return new TImage(path);
-  else if (extIsMovie(ext)) return new TMovie(path);
+  //else if (extIsMovie(ext)) return new TMovie(path);
   return new NoFile(path);
 }
 
@@ -49,7 +49,7 @@ class NoFile extends TFile {
   }
 }
 
-abstract class TThumbnailable extends TFile {
+abstract class TThumbable extends TFile {
   String getThumbnailAbsoluteLocation() {
     int indx = location.indexOf('.');
     return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
@@ -57,22 +57,22 @@ abstract class TThumbnailable extends TFile {
   }
 }
 
-class TImage extends TThumbnailable {
+class TImage extends TThumbable {
   TImage(String _location) {
     this.location = _location;
   }
 
-  ImageTile makeTile(int id) {
-    return new ImageTile(this, id);
+  ThumbableTile makeTile(int id) {
+    return new ThumbableTile(this, id);
   }
 }
 
-class TMovie extends TThumbnailable {
+class TMovie extends TThumbable {
   TMovie(String _location) {
     this.location = _location;
   }
 
-  ImageTile makeTile(int id) {
+  ThumbableTile makeTile(int id) {
     return null; //new MovieTile(this, id);
   }
 }
