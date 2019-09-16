@@ -15,7 +15,7 @@ void loadFiles() {
 TFile createFile(String path) {
   String ext = path.substring(path.indexOf('.')).toLowerCase();
   if (extIsImage(ext)) return new TImage(path);
-  //else if (extIsMovie(ext)) return new TMovie(path);
+  else if (extIsMovie(ext)) return new TMovie(path);
   return new NoFile(path);
 }
 
@@ -73,6 +73,6 @@ class TMovie extends TThumbable {
   }
 
   ThumbableTile makeTile(int id) {
-    return null; //new MovieTile(this, id);
+    return new ThumbableTile(this, id);
   }
 }

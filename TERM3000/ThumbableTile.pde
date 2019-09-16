@@ -2,6 +2,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import processing.video.*;
+
 class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
   TThumbable tfile;
   PImage thumbnail;
@@ -123,13 +125,20 @@ class ThumbnailWorker extends Thread {
 
         PImage full;
 
-        //if (
-        full = loadImg(ROOT + "/" + tile.tfile.location);
+        String runtimeClassName = tile.tfile.getClass().getSimpleName();
+        if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
+        else if (false && runtimeClassName.equals("TMovie")) {
+          // Load
+          //Movie mov = new Movie(this,
+        } else {
+          println("RUNTIME ERROR!!!");
+          println("No implementation provided for generating a thumbail for TFiles of type "+runtimeClassName);
+          full = createImage(300, 300, RGB);
+          // I don't know of a gracefull way to throw exceptions, especially within a thread...
+        }
 
         // SHRINK
-        tile.status = tile.SHRINKING;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        setStatus(tile.SHRINKING);
 
         int scale = floor(sqrt(full.pixels.length / 80000));
         int nw = full.width / scale;
@@ -146,9 +155,7 @@ class ThumbnailWorker extends Thread {
         full.resize(nw, nh);
         tile.thumbnail = full.copy();
 
-        tile.status = tile.DONE;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        setStatus(tile.DONE);
 
         //SAVE
         full.save(thumbnail.getAbsolutePath());
@@ -158,9 +165,7 @@ class ThumbnailWorker extends Thread {
       } else {
         // Load thumbnail
         tile.thumbnail = loadImg(thumbnail.getAbsolutePath());
-        tile.status = tile.DONE;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        setStatus(tile.DONE);
       }
 
 
@@ -169,11 +174,15 @@ class ThumbnailWorker extends Thread {
     }
   }
 
-  PImage loadImg(String str) {
-    // LOAD
-    tile.status = tile.LOADING;
+  void setStatus(int status) {
+    tile.status = status;
     tile.repaint = true;
     if (tile.visible) redraw();
+  }
+
+  PImage loadImg(String str) {
+    // LOAD
+    setStatus(tile.LOADING);
 
     //println("loading "+tile.image.location);
     PImage full = loadImage(str);
