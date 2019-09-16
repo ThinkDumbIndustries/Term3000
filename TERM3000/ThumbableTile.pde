@@ -127,13 +127,19 @@ class ThumbnailWorker extends Thread {
 
         String runtimeClassName = tile.tfile.getClass().getSimpleName();
         if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
-        else if (false && runtimeClassName.equals("TMovie")) {
-          // Load
-          //Movie mov = new Movie(this,
+        else if (runtimeClassName.equals("TMovie")) {
+          // Movie stuffs!
+          Movie mov = new Movie(SKETCH, ROOT + "/" + tile.tfile.location);
+          mov.play();
+          while (!mov.available()) sleeep(10);
+          mov.read();
+          mov.stop();
+          full = mov;
         } else {
           println("RUNTIME ERROR!!!");
           println("No implementation provided for generating a thumbail for TFiles of type "+runtimeClassName);
-          full = createImage(300, 300, RGB);
+          full = createImage(400, 300, RGB);
+          for (int i = 0; i < full.pixels.length; i++) full.pixels[i] = color(random(255)); // let's have some fun, eyy
           // I don't know of a gracefull way to throw exceptions, especially within a thread...
         }
 

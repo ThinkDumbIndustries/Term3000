@@ -5,10 +5,12 @@ int MAX_THUMBNAIL_WORKERS = 4;
 
 TileGrid grid;
 
+PApplet SKETCH = this;
+
 void setup() {
   noStroke();
   size(500, 300);
-  //fullScreen(2);
+  //fullScreen();
 
   setupThumbnailWorkers();
   loadFiles();
