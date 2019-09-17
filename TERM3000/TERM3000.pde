@@ -2,8 +2,6 @@
 String ROOT = "C:/Users/Maximilien/Pictures/Photos";
 int MAX_THUMBNAIL_WORKERS = 4;
 
-Context context;
-
 PApplet SKETCH = this;
 
 void setup() {
@@ -13,7 +11,7 @@ void setup() {
 
   setupThumbnailWorkers();
   loadFiles();
-  context = new TileGrid(width, height, 5);
+  initializeContext(new TileGrid(width, height, 5));
 }
 
 boolean repaint_background = true;
@@ -48,12 +46,4 @@ boolean reedraw = true;
 void reedraw() {
   reedraw = true;
   redraw();
-}
-
-void mouseWheel(MouseEvent event) {
-  context.mouseWheel(event);
-}
-
-void keyPressed() {
-  context.keyPressed();
 }

@@ -36,9 +36,9 @@ class TileGrid extends Context {
 
   void setupColorTiles() {
     tiles = new Tile[234];
-    for (int i = 1; i < tiles.length; i++) tiles[i] = new ColorTile();
-    tiles[0] = new ColorTile(color(255, 0, 0));
-    tiles[tiles.length-1] = new ColorTile(color(255, 255, 0));
+    for (int i = 1; i < tiles.length; i++) tiles[i] = new ColorTile(null);
+    tiles[0] = new ColorTile(null, color(255, 0, 0));
+    tiles[tiles.length-1] = new ColorTile(null, color(255, 255, 0));
   }
 
   TileGrid(int GRID_WIDTH, int GRID_HEIGHT) {
@@ -104,6 +104,23 @@ class TileGrid extends Context {
     else if (keyCode == 33) setLine(current_line - LINES_PER_SCREEN + 1, false); // Page Down
     else if (keyCode == 36) setLine(0, false);             // Home
     else if (keyCode == 35) setLine(MAX_LINE, false); // End
+  }
+
+  void mousePressed() {
+    if (!mousePressed) return;
+    Tile t = getTileAtScreenPos(mouseX, mouseY);
+    if (t == null) return;
+    if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
+    println(t.tfile.location);
+  }
+
+  Tile getTileAtScreenPos(int x, int y) {
+    if (x < 0 || y < 0 || x > GRID_WIDTH - SCROLL_BAR_WIDTH || y > GRID_HEIGHT) return null;
+    int i = mouseX / TILE_WIDTH;
+    int j = mouseY / TILE_HEIGHT;
+    int id = TILES_PER_LINE * (j + current_line) + i;
+    if (id >= tiles.length) return null;
+    return tiles[id];
   }
 
   void display() {

@@ -18,8 +18,9 @@ class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
   int priority;
   int id;
 
-  ThumbableTile(TThumbable _image, int _id) {
-    this.tfile = _image;
+  ThumbableTile(TThumbable _tfile, int _id) {
+    super(_tfile);
+    this.tfile = _tfile;
     this.id = _id;
     this.priority = id;
     addToThumbnailWorkerQueue(this);

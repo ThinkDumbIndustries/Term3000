@@ -43,7 +43,7 @@ class NoFile extends TFile {
   }
 
   TextTile makeTile(int id) {
-    TextTile tt = new TextTile("Unsupported File:\n"+location);
+    TextTile tt = new TextTile(this, "Unsupported File:\n"+location);
     tt.setFill(color(240, 0, 0));
     return tt;
   }

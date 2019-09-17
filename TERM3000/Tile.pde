@@ -1,8 +1,12 @@
 abstract class Tile {
-  TFile img;
+  TFile tfile;
   boolean selected;
   boolean repaint = true;
   boolean visible;
+
+  Tile(TFile _tfile) {
+    this.tfile = _tfile;
+  }
 
   abstract void display(int x, int y, int w, int h);
 }
@@ -12,7 +16,8 @@ class TextTile extends Tile {
   color fill;
   color bg;
 
-  TextTile(String _text) {
+  TextTile(TFile _tfile, String _text) {
+    super(_tfile);
     this.text = _text;
     fill = color(255);
     bg = color(0);
@@ -42,12 +47,13 @@ class TextTile extends Tile {
 class ColorTile extends Tile {
   color col;
 
-  ColorTile(color col) {
+  ColorTile(TFile _tfile, color col) {
+    super(_tfile);
     this.col = col;
   }
 
-  ColorTile() {
-    this(color(color(0, random(255), 128+random(128))));
+  ColorTile(TFile _tfile) {
+    this(_tfile, color(color(0, random(255), 128+random(128))));
   }
 
   void display(int x, int y, int w, int h) {
