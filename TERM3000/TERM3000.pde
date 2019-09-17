@@ -5,9 +5,11 @@ int MAX_THUMBNAIL_WORKERS = 4;
 PApplet SKETCH = this;
 
 void setup() {
+  size(500, 300, FX2D);
+  //fullScreen(FX2D);
+  //surface.setResizable(true);
+
   //noStroke();
-  size(500, 300);
-  //fullScreen();
 
   setupThumbnailWorkers();
   loadFiles();

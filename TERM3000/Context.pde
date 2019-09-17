@@ -41,6 +41,8 @@ void keyPressed() {
   context.keyPressed();
 }
 void keyReleased() {
+  //if (key == ESC) key = 0;
+  //println(keyCode);
   context.keyReleased();
 }
 

@@ -18,7 +18,7 @@ class FullView extends Context {
   void keyPressed() {
     int old_indx = indx;
     if (keyCode == LEFT) indx = max(0, indx - 1);
-    else if (keyCode == RIGHT) indx = max(0, indx + 1);
+    else if (keyCode == RIGHT) indx = min(indx + 1, files.length - 1);
     if (old_indx != indx) {
       loadFull();
       reedraw();
