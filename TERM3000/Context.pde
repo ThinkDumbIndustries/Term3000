@@ -6,17 +6,20 @@ Stack<Context> contextHistory;
 void initializeContext(Context _context) {
   contextHistory = new Stack();
   context = _context;
+  reedraw();
 }
 
 // Change current context, but don't change the history
 void changeContext(Context _context) {
   context = _context;
+  reedraw();
 }
 
 // Change the current context, and push the previous current context to the contextHistory
 void addContext(Context _context) {
   contextHistory.push(context);
   context = _context;
+  reedraw();
 }
 
 void mousePressed() {
@@ -42,6 +45,11 @@ void keyReleased() {
 }
 
 abstract class Context {
+  int WIDTH, HEIGHT;
+  Context(int _WIDTH, int _HEIGHT) {
+    this.WIDTH = _WIDTH;
+    this.HEIGHT = _HEIGHT;
+  }
   void display() {
   }
   void mousePressed() {

@@ -19,6 +19,7 @@ class TileGrid extends Context {
   ScrollBar bar;
 
   TileGrid(int _GRID_WIDTH, int _GRID_HEIGHT, int _TILES_PER_LINE) {
+    super(_GRID_WIDTH, _GRID_HEIGHT);
     //setupColorTiles();
     setupTiles(files);
 
@@ -108,19 +109,21 @@ class TileGrid extends Context {
 
   void mousePressed() {
     if (!mousePressed) return;
-    Tile t = getTileAtScreenPos(mouseX, mouseY);
-    if (t == null) return;
+    int indx = getTileIndxAtScreenPos(mouseX, mouseY);
+    if (indx == -1) return;
+    Tile t = tiles[indx];
     if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
     println(t.tfile.location);
+    addContext(new FullView(WIDTH, HEIGHT, files, indx));
   }
 
-  Tile getTileAtScreenPos(int x, int y) {
-    if (x < 0 || y < 0 || x > GRID_WIDTH - SCROLL_BAR_WIDTH || y > GRID_HEIGHT) return null;
+  int getTileIndxAtScreenPos(int x, int y) {
+    if (x < 0 || y < 0 || x > GRID_WIDTH - SCROLL_BAR_WIDTH || y > GRID_HEIGHT) return -1;
     int i = mouseX / TILE_WIDTH;
     int j = mouseY / TILE_HEIGHT;
     int id = TILES_PER_LINE * (j + current_line) + i;
-    if (id >= tiles.length) return null;
-    return tiles[id];
+    if (id >= tiles.length) return -1;
+    return id;
   }
 
   void display() {
