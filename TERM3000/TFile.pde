@@ -62,23 +62,3 @@ abstract class TThumbable extends TFile {
     //return ROOT + "/thumbnailstif/" + location.substring(0, indx) + ".tif";
   }
 }
-
-class TImage extends TThumbable {
-  TImage(String _location) {
-    this.location = _location;
-  }
-
-  ThumbableTile makeTile(int id) {
-    return new ThumbableTile(this, id);
-  }
-}
-
-class TMovie extends TThumbable {
-  TMovie(String _location) {
-    this.location = _location;
-  }
-
-  ThumbableTile makeTile(int id) {
-    return new ThumbableTile(this, id);
-  }
-}
