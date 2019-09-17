@@ -1,6 +1,6 @@
 final int MIN_SCROLL_BAR_WIDTH = 10;
 
-class TileGrid {
+class TileGrid extends Context {
   int TILES_PER_LINE;
   int GRID_WIDTH, GRID_HEIGHT;
 
@@ -85,6 +85,25 @@ class TileGrid {
         tiles[id].visible = visible_state;
       }
     }
+  }
+
+  void mouseWheel(MouseEvent event) {
+    setLine(constrain(event.getCount(), -1, 1) + current_line, false);
+  }
+
+  void keyPressed() {
+    if (key == 'r') {
+      for (int i = 0; i < tiles.length; i++) tiles[i].repaint = true;
+      repaint_background = true;
+      reedraw();
+    } else if (keyCode == UP) setLine(current_line - 1, false);
+    else if (keyCode == DOWN)  setLine(current_line + 1, false);
+    else if (key == '+') setTilesPerLine(TILES_PER_LINE - 1, false);
+    else if (key == '-') setTilesPerLine(TILES_PER_LINE + 1, false);
+    else if (keyCode == 34) setLine(current_line + LINES_PER_SCREEN - 1, false); // Page Up
+    else if (keyCode == 33) setLine(current_line - LINES_PER_SCREEN + 1, false); // Page Down
+    else if (keyCode == 36) setLine(0, false);             // Home
+    else if (keyCode == 35) setLine(MAX_LINE, false); // End
   }
 
   void display() {
