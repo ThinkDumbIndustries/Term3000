@@ -22,6 +22,15 @@ void addContext(Context _context) {
   reedraw();
 }
 
+void restorePreviousContext() {
+  if (contextHistory.isEmpty()) exit();
+  else {
+    context = contextHistory.pop();
+    context.flagEverythingForRepaint();
+    reedraw();
+  }
+}
+
 void mousePressed() {
   context.mousePressed();
 }
@@ -38,11 +47,14 @@ void mouseWheel(MouseEvent event) {
   context.mouseWheel(event);
 }
 void keyPressed() {
+  if (key == ESC) {
+    restorePreviousContext();
+    key = 0;
+    return;
+  }
   context.keyPressed();
 }
 void keyReleased() {
-  //if (key == ESC) key = 0;
-  //println(keyCode);
   context.keyReleased();
 }
 
@@ -51,6 +63,8 @@ abstract class Context {
   Context(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  void flagEverythingForRepaint() {
   }
   void display() {
   }

@@ -90,10 +90,11 @@ class TileGrid extends Context {
 
   void mouseWheel(MouseEvent event) {
     setLine(constrain(event.getCount(), -1, 1) + current_line, false);
+    reedraw();
   }
 
   void keyPressed() {
-    if (key == 'r') {
+    if (key == 'R') {
       for (int i = 0; i < tiles.length; i++) tiles[i].repaint = true;
       repaint_background = true;
       reedraw();
@@ -113,7 +114,6 @@ class TileGrid extends Context {
     if (indx == -1) return;
     Tile t = tiles[indx];
     if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
-    println(t.tfile.location);
     addContext(new FullView(WIDTH, HEIGHT, files, indx));
   }
 
@@ -124,6 +124,16 @@ class TileGrid extends Context {
     int id = TILES_PER_LINE * (j + current_line) + i;
     if (id >= tiles.length) return -1;
     return id;
+  }
+
+  void flagEverythingForRepaint() {
+    for (int j = 0; j < LINES_PER_SCREEN; j++) {
+      for (int i = 0; i < TILES_PER_LINE; i++) {
+        int id = (j + current_line) * TILES_PER_LINE + i;
+        if (id >= tiles.length) break;
+        tiles[id].repaint = true;
+      }
+    }
   }
 
   void display() {
