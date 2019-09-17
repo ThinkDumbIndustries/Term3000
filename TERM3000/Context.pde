@@ -83,3 +83,18 @@ abstract class Context {
   void keyReleased() {
   }
 }
+
+
+// This one's for you, Taj!
+interface Contextable {
+  Context toContext(int _WIDTH, int _HEIGHT);
+}
+
+class BlankContext extends Context {
+  BlankContext(int _WIDTH, int _HEIGHT) {
+    super(_WIDTH, _HEIGHT);
+  }
+  void display() {
+    background(0);
+  }
+}

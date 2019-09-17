@@ -31,10 +31,16 @@ boolean extIsMovie(String ext) {
   return ext.equals(".mov");
 }
 
-abstract class TFile {
+
+
+abstract class TFile implements Contextable {
   String location;
 
   abstract Tile makeTile(int id);
+
+  Context toContext(int _WIDTH, int _HEIGHT) {
+    return new BlankContext(_WIDTH, _HEIGHT);
+  }
 }
 
 class NoFile extends TFile {
