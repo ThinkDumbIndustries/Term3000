@@ -49,3 +49,8 @@ void reedraw() {
   reedraw = true;
   redraw();
 }
+
+void movieEvent(Movie m) {
+  m.read();
+  reedraw();
+}

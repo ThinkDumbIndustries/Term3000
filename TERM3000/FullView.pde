@@ -15,6 +15,7 @@ class FullView extends Context {
     if (keyCode == LEFT) indx = max(0, indx - 1);
     else if (keyCode == RIGHT) indx = min(indx + 1, files.length - 1);
     if (old_indx == indx) return;
+    ctx.deconstruct();
     ctx = tfiles[indx].toContext(WIDTH, HEIGHT);
     reedraw();
   }

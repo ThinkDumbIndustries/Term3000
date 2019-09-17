@@ -14,10 +14,12 @@ class TImage extends TThumbable {
 
 class ImageContext extends Context {
   PImage full;
+  float scale;
 
   ImageContext(TImage timage, int _WIDTH, int _HEIGHT) {
     super(_WIDTH, _HEIGHT);
     full = loadImage(ROOT + "/" + timage.location);
+    scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
   }
 
   void display() {
@@ -26,7 +28,6 @@ class ImageContext extends Context {
     rect(0, 0, WIDTH, HEIGHT);
     pushMatrix();
     translate(WIDTH*.5, HEIGHT*.5);
-    float scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
     scale(scale);
     imageMode(CENTER);
     image(full, 0, 0);

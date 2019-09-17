@@ -5,12 +5,14 @@ Stack<Context> contextHistory;
 
 void initializeContext(Context _context) {
   contextHistory = new Stack();
+  if (context != null) context.deconstruct();
   context = _context;
   reedraw();
 }
 
 // Change current context, but don't change the history
 void changeContext(Context _context) {
+  if (context != null) context.deconstruct();
   context = _context;
   reedraw();
 }
@@ -25,6 +27,7 @@ void addContext(Context _context) {
 void restorePreviousContext() {
   if (contextHistory.isEmpty()) exit();
   else {
+    if (context != null) context.deconstruct();
     context = contextHistory.pop();
     context.flagEverythingForRepaint();
     reedraw();
@@ -63,6 +66,8 @@ abstract class Context {
   Context(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  void deconstruct() {
   }
   void flagEverythingForRepaint() {
   }
