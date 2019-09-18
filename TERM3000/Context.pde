@@ -68,6 +68,8 @@ abstract class Context {
     this.HEIGHT = _HEIGHT;
   }
   void resize(int _WIDTH, int _HEIGHT) {
+    this.WIDTH = _WIDTH;
+    this.HEIGHT = _HEIGHT;
   }
   void deconstruct() {
   }

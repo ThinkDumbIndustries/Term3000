@@ -1,30 +1,21 @@
 final int MIN_SCROLL_BAR_WIDTH = 10;
 
 class TileGrid extends Context {
-  int TILES_PER_LINE;
-  int GRID_WIDTH, GRID_HEIGHT;
-
-  int SCROLL_BAR_WIDTH;
-
-  float IMAGE_RATIO = 3.0 / 4;
+  final float IMAGE_RATIO = 3.0 / 4;
   int TILE_WIDTH, TILE_HEIGHT;
+  int TILES_PER_LINE;
 
   int LINES_PER_SCREEN;
-
   int current_line = 0;
   int MAX_LINE;
+  ScrollBar bar;
 
   Tile[] tiles;
 
-  ScrollBar bar;
-
-  TileGrid(int _GRID_WIDTH, int _GRID_HEIGHT, int _TILES_PER_LINE) {
-    super(_GRID_WIDTH, _GRID_HEIGHT);
+  TileGrid(int _WIDTH, int _HEIGHT, int _TILES_PER_LINE) {
+    super(_WIDTH, _HEIGHT);
     //setupColorTiles();
     setupTiles(files);
-
-    this.GRID_WIDTH = _GRID_WIDTH;
-    this.GRID_HEIGHT = _GRID_HEIGHT;
     setTilesPerLine(_TILES_PER_LINE, true);
   }
 
@@ -42,8 +33,14 @@ class TileGrid extends Context {
     tiles[tiles.length-1] = new ColorTile(null, color(255, 255, 0));
   }
 
-  TileGrid(int GRID_WIDTH, int GRID_HEIGHT) {
-    this(GRID_WIDTH, GRID_HEIGHT, 5);
+  TileGrid(int _WIDTH, int _HEIGHT) {
+    this(_WIDTH, _HEIGHT, 5);
+  }
+
+  void resize(int _WIDTH, int _HEIGHT) {
+    this.WIDTH = _WIDTH;
+    this.HEIGHT = _HEIGHT;
+    setTilesPerLine(TILES_PER_LINE, true);
   }
 
   void setTilesPerLine(int _TILES_PER_LINE, boolean force) {
@@ -54,14 +51,14 @@ class TileGrid extends Context {
     this.TILES_PER_LINE = _TILES_PER_LINE;
 
     setOnscreenTilesVisibleTo(false);
-    TILE_WIDTH = (GRID_WIDTH - MIN_SCROLL_BAR_WIDTH) / TILES_PER_LINE;
-    SCROLL_BAR_WIDTH = GRID_WIDTH - TILE_WIDTH * TILES_PER_LINE;
+    TILE_WIDTH = (WIDTH - MIN_SCROLL_BAR_WIDTH) / TILES_PER_LINE;
+    int SCROLL_BAR_WIDTH = WIDTH - TILE_WIDTH * TILES_PER_LINE;
     TILE_HEIGHT = int(TILE_WIDTH * IMAGE_RATIO);
-    LINES_PER_SCREEN = 1 + (GRID_HEIGHT - 1) / TILE_HEIGHT;
+    LINES_PER_SCREEN = 1 + (HEIGHT - 1) / TILE_HEIGHT;
 
     MAX_LINE = max(0, ((tiles.length - 1) / TILES_PER_LINE) - LINES_PER_SCREEN + 2);
 
-    bar = new ScrollBar(MAX_LINE, SCROLL_BAR_WIDTH, GRID_HEIGHT, float(LINES_PER_SCREEN) / (1 + tiles.length / TILES_PER_LINE));
+    bar = new ScrollBar(MAX_LINE, SCROLL_BAR_WIDTH, HEIGHT, float(LINES_PER_SCREEN) / (1 + tiles.length / TILES_PER_LINE));
 
     setLine(floor(float(current_line * OLD_TILES_PER_LINE) / TILES_PER_LINE), true); // important for setting visible up
   }
@@ -118,7 +115,7 @@ class TileGrid extends Context {
   }
 
   int getTileIndxAtScreenPos(int x, int y) {
-    if (x < 0 || y < 0 || x > GRID_WIDTH - SCROLL_BAR_WIDTH || y > GRID_HEIGHT) return -1;
+    if (x < 0 || y < 0 || x > WIDTH - bar.WIDTH || y > HEIGHT) return -1;
     int i = mouseX / TILE_WIDTH;
     int j = mouseY / TILE_HEIGHT;
     int id = TILES_PER_LINE * (j + current_line) + i;
@@ -151,7 +148,7 @@ class TileGrid extends Context {
     }
     popMatrix();
     pushMatrix();
-    translate(GRID_WIDTH - SCROLL_BAR_WIDTH, 0);
+    translate(WIDTH - bar.WIDTH, 0);
     noStroke();
     fill(255);
     bar.display();
