@@ -48,6 +48,9 @@ void mouseClicked() {
 void mouseReleased() {
   context.mouseReleased();
 }
+void mouseMoved() {
+  context.mouseMoved();
+}
 void mouseDragged() {
   context.mouseDragged();
 }
@@ -58,9 +61,7 @@ void keyPressed() {
   if (key == ESC) {
     popContext();
     key = 0;
-    return;
-  }
-  context.keyPressed();
+  } else context.keyPressed();
 }
 void keyReleased() {
   context.keyReleased();
@@ -87,6 +88,8 @@ abstract class Context {
   void mouseClicked() {
   }
   void mouseReleased() {
+  }
+  void mouseMoved() {
   }
   void mouseDragged() {
   }

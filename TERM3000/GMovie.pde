@@ -27,6 +27,34 @@ class MovieContext extends Context {
     mov.stop();
   }
 
+  boolean show_navbar = false;
+  boolean navbar_dragged = true;
+
+  void mousePressed() {
+    if (!mousePressed) return;
+    if (!show_navbar) return;
+    navbar_dragged = true;
+    mouseDragged();
+  }
+
+  void mouseReleased() {
+    navbar_dragged = false;
+  }
+
+  void mouseDragged() {
+    if (!navbar_dragged) return;
+    float time = map(mouseX, 0, WIDTH, 0, mov.duration());
+    time = constrain(time, 0, mov.duration());
+    mov.jump(time);
+  }
+
+  void mouseMoved() {
+    boolean _show_navbar = mouseY > HEIGHT - 64;
+    if (show_navbar == _show_navbar) return;
+    show_navbar = _show_navbar;
+    reedraw();
+  }
+
   void display() {
     fill(0);
     noStroke();
@@ -38,6 +66,17 @@ class MovieContext extends Context {
     imageMode(CENTER);
     image(mov, 0, 0);
     popMatrix();
+    if (show_navbar || navbar_dragged) {
+      pushMatrix();
+      translate(0, HEIGHT - 50);
+      noStroke();
+      fill(0, 128);
+      rect(0, 0, WIDTH, 50);
+      fill(255);
+      float x = map(mov.time(), 0, mov.duration(), 0, WIDTH);
+      rect(x -2, 0, 4, 50);
+      popMatrix();
+    }
   }
 
   boolean playing = true;

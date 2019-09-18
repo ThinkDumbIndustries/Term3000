@@ -20,6 +20,7 @@ void setup() {
   setupThumbnailWorkers();
   loadFiles();
   initializeContext(new TileGrid(width, height, 5));
+  //pushContext(new FullView(width, height, files, 137)); // temporary; for faster development
 
   PSurfaceFX fx = (PSurfaceFX)surface;
   Canvas canvas = (Canvas) fx.getNative();
@@ -41,8 +42,8 @@ void draw() {
     noLoop();
     return;
   } 
-  loop();
   reedraw = false;
+  loop();
 
   if (resize_happened) context.resize(width, height);
   resize_happened = false;

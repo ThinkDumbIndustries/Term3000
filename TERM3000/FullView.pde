@@ -10,12 +10,34 @@ class FullView extends Context {
     ctx = tfiles[indx].toContext(WIDTH, HEIGHT);
   }
 
+  void deconstruct() {
+    ctx.deconstruct();
+  }
+
   void resize(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
     ctx.resize(WIDTH, HEIGHT);
   }
 
+  void mousePressed() {
+    ctx.mousePressed();
+  }
+  void mouseClicked() {
+    ctx.mouseClicked();
+  }
+  void mouseReleased() {
+    ctx.mouseReleased();
+  }
+  void mouseMoved() {
+    ctx.mouseMoved();
+  }
+  void mouseDragged() {
+    ctx.mouseDragged();
+  }
+  void mouseWheel(MouseEvent event) {
+    ctx.mouseWheel(event);
+  }
   void keyPressed() {
     int old_indx = indx;
     if (keyCode == LEFT) indx = max(0, indx - 1);
@@ -28,6 +50,9 @@ class FullView extends Context {
     ctx.deconstruct();
     ctx = tfiles[indx].toContext(WIDTH, HEIGHT);
     reedraw();
+  }
+  void keyReleased() {
+    ctx.keyReleased();
   }
 
   void display() {

@@ -141,13 +141,14 @@ class TileGrid extends Context {
   }
 
   void flagEverythingForRepaint() {
-    for (int j = 0; j < LINES_PER_SCREEN; j++) {
-      for (int i = 0; i < TILES_PER_LINE; i++) {
-        int id = (j + current_line) * TILES_PER_LINE + i;
-        if (id >= tiles.length) break;
-        tiles[id].repaint = true;
-      }
-    }
+    for (int i = 0; i< tiles.length; i++) tiles[i].repaint = true;
+    //for (int j = 0; j < LINES_PER_SCREEN; j++) {
+    //  for (int i = 0; i < TILES_PER_LINE; i++) {
+    //    int id = (j + current_line) * TILES_PER_LINE + i;
+    //    if (id >= tiles.length) break;
+    //    tiles[id].repaint = true;
+    //  }
+    //}
   }
 
   void display() {
