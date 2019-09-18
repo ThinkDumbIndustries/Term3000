@@ -104,13 +104,31 @@ class TileGrid extends Context {
     else if (keyCode == 35) setLine(MAX_LINE, false); // End
   }
 
+  boolean bar_dragged = false;
+
   void mousePressed() {
     if (!mousePressed) return;
     int indx = getTileIndxAtScreenPos(mouseX, mouseY);
-    if (indx == -1) return;
-    Tile t = tiles[indx];
-    if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
-    pushContext(new FullView(WIDTH, HEIGHT, files, indx));
+    if (indx == -1) {
+      if (mouseX > WIDTH - bar.WIDTH) {
+        bar_dragged = true;
+        mouseDragged();
+      }
+    } else {
+      Tile t = tiles[indx];
+      if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
+      pushContext(new FullView(WIDTH, HEIGHT, files, indx));
+    }
+  }
+
+  void mouseReleased() {
+    bar_dragged = false;
+  }
+
+  void mouseDragged() {
+    bar.setScreenLocation(mouseY);
+    setLine(bar.location, false);
+    reedraw();
   }
 
   int getTileIndxAtScreenPos(int x, int y) {

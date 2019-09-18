@@ -44,9 +44,7 @@ void draw() {
   loop();
   reedraw = false;
 
-  if (resize_happened) {
-    context.resize(width, height);
-  }
+  if (resize_happened) context.resize(width, height);
   resize_happened = false;
 
   // Do the actual redraw
@@ -54,7 +52,6 @@ void draw() {
   repaint_background = false;
 
   context.display();
-  // grid.display();
 
   showFrameCount();
 }

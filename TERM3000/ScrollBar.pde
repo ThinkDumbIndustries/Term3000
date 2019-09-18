@@ -20,6 +20,11 @@ class ScrollBar {
     location = constrain(loc, 0, max);
   }
 
+  void setScreenLocation(int y) {
+    int loc = round(map(y - BAR_HEIGHT * .5, 0, HEIGHT - BAR_HEIGHT, 0, max));
+    setLocation(loc);
+  }
+
   void display() {
     float y;
     if (max == 0) y = 0;
