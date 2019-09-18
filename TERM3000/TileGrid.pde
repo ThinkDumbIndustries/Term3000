@@ -111,7 +111,7 @@ class TileGrid extends Context {
     if (indx == -1) return;
     Tile t = tiles[indx];
     if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
-    addContext(new FullView(WIDTH, HEIGHT, files, indx));
+    pushContext(new FullView(WIDTH, HEIGHT, files, indx));
   }
 
   int getTileIndxAtScreenPos(int x, int y) {

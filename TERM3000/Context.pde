@@ -18,18 +18,22 @@ void changeContext(Context _context) {
 }
 
 // Change the current context, and push the previous current context to the contextHistory
-void addContext(Context _context) {
+void pushContext(Context _context) {
   contextHistory.push(context);
   context = _context;
   reedraw();
 }
 
-void restorePreviousContext() {
+void popContext() {
   if (contextHistory.isEmpty()) exit();
   else {
-    if (context != null) context.deconstruct();
-    context = contextHistory.pop();
-    context.flagEverythingForRepaint();
+    Context restored = contextHistory.pop();
+    if (restored.WIDTH != width || restored.HEIGHT != height) restored.resize(width, height);
+    restored.flagEverythingForRepaint();
+    if (context != null) {
+      context.deconstruct();
+    }
+    context = restored;
     reedraw();
   }
 }
@@ -51,7 +55,7 @@ void mouseWheel(MouseEvent event) {
 }
 void keyPressed() {
   if (key == ESC) {
-    restorePreviousContext();
+    popContext();
     key = 0;
     return;
   }
