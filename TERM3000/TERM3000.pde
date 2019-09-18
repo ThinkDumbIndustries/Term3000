@@ -1,48 +1,78 @@
-String ROOT = "C:/Users/felix/Pictures/Photos";
-
+//String ROOT = "C:/Users/felix/Pictures/Photos";
+String ROOT = "C:/Users/Maximilien/Pictures/Photos";
 int MAX_THUMBNAIL_WORKERS = 4;
 
-TileGrid grid;
+PApplet SKETCH = this;
+
+import processing.javafx.PSurfaceFX;
+import javafx.stage.Stage;
+import javafx.scene.canvas.Canvas;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 
 void setup() {
-  noStroke();
-  //size(500, 300);
-  fullScreen(2);
+  size(500, 300, FX2D);
+  //fullScreen(FX2D);
+  //surface.setResizable(true);
+
+  //noStroke();
 
   setupThumbnailWorkers();
-  loadImages();
-  grid = new TileGrid(width, height, 5);
-  noLoop();
+  loadFiles();
+  initializeContext(new TileGrid(width, height, 5));
+  //pushContext(new FullView(width, height, files, 137)); // temporary; for faster development
+
+  PSurfaceFX fx = (PSurfaceFX)surface;
+  Canvas canvas = (Canvas) fx.getNative();
+  InvalidationListener listener = new InvalidationListener() {
+    public void invalidated(Observable o) {
+      resize_happened = true;
+      reedraw();
+    }
+  };
+  canvas.widthProperty().addListener(listener);
+  canvas.heightProperty().addListener(listener);
 }
 
+boolean resize_happened = true;
 boolean repaint_background = true;
 
 void draw() {
+  if (!reedraw) {
+    noLoop();
+    return;
+  } 
+  reedraw = false;
+  loop();
+
+  if (resize_happened) context.resize(width, height);
+  resize_happened = false;
+
+  // Do the actual redraw
   if (repaint_background) background(0);
   repaint_background = false;
-  //noStroke();
-  //fill(0, 40);
-  //rect(0, 0, width, height);
-  grid.display();
+
+  context.display();
+
+  showFrameCount();
+}
+
+void showFrameCount() {
+  pushStyle();
   fill(255);
   textSize(20);
   textAlign(LEFT, TOP);
   text(frameCount, 0, 0);
+  popStyle();
 }
 
-void mouseWheel(MouseEvent event) {
-  grid.setLine(constrain(event.getCount(), -1, 1) + grid.current_line, false);
+boolean reedraw = true;
+void reedraw() {
+  reedraw = true;
+  redraw();
 }
 
-void keyPressed() { 
-  if (key == 'r') {
-    for (int i = 0; i < grid.tiles.length; i++) grid.tiles[i].repaint = true;
-    repaint_background = true;
-    redraw();
-  } else if (keyCode == UP) grid.setLine(grid.current_line - 1, false);
-  else if (keyCode == DOWN)  grid.setLine(grid.current_line + 1, false);
-  else if (key == '+') grid.setTilesPerLine(grid.TILES_PER_LINE - 1, false);
-  else if (key == '-') grid.setTilesPerLine(grid.TILES_PER_LINE + 1, false);
-  else if (keyCode == 34) grid.setLine(grid.current_line + grid.LINES_PER_SCREEN - 1, false);
-  else if (keyCode == 33) grid.setLine(grid.current_line - grid.LINES_PER_SCREEN + 1, false);
+void movieEvent(Movie m) {
+  m.read();
+  reedraw();
 }

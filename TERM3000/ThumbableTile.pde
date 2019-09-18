@@ -2,9 +2,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-class ImageTile extends Tile implements Comparable<ImageTile> {
-  TImage image;
-  PImage pimg;
+import processing.video.*;
+
+class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
+  TThumbable tfile;
+  PImage thumbnail;
 
   final int ERROR = 0;
   final int WAITING = 1;
@@ -16,15 +18,16 @@ class ImageTile extends Tile implements Comparable<ImageTile> {
   int priority;
   int id;
 
-  ImageTile(TImage _image, int _id) {
-    this.image = _image;
+  ThumbableTile(TThumbable _tfile, int _id) {
+    super(_tfile);
+    this.tfile = _tfile;
     this.id = _id;
     this.priority = id;
     addToThumbnailWorkerQueue(this);
     status = WAITING;
   }
 
-  public int compareTo(ImageTile other) {
+  public int compareTo(ThumbableTile other) {
     return this.priority - other.priority;
   }
 
@@ -42,15 +45,15 @@ class ImageTile extends Tile implements Comparable<ImageTile> {
       rect(0, 0, w, h);
       pushMatrix();
       translate(w*.5, h*.5);
-      float sc = min(float(w)/pimg.width, float(h)/pimg.height);
+      float sc = min(float(w)/thumbnail.width, float(h)/thumbnail.height);
       scale(sc);
       imageMode(CENTER);
-      image(pimg, 0, 0);
+      image(thumbnail, 0, 0);
       popMatrix();
       return;
     }
     priority = -frameCount*100 + id;
-    updatePriorityImagetile(this);
+    updatePriorityThumbabletile(this);
 
     rect(0, 0, w, h);
     pushStyle();
@@ -71,31 +74,31 @@ void setupThumbnailWorkers() {
   }
 }
 
-void addToThumbnailWorkerQueue(ImageTile tile) {
-  ImagetilesToLoad.add(tile);
+void addToThumbnailWorkerQueue(ThumbableTile tile) {
+  ThumbabletilesToLoad.add(tile);
 }
 
-ImageTile pollNextImagetileToLoad() {
-  return ImagetilesToLoad.poll();
+ThumbableTile pollNextThumbabletileToLoad() {
+  return ThumbabletilesToLoad.poll();
 }
 
-void updatePriorityImagetile(ImageTile t) {
-  if (ImagetilesToLoad.remove(t)) ImagetilesToLoad.add(t);
+void updatePriorityThumbabletile(ThumbableTile t) {
+  if (ThumbabletilesToLoad.remove(t)) ThumbabletilesToLoad.add(t);
 }
 
 ThumbnailWorker[] thumbnailWorkers;
-Queue<ImageTile> ImagetilesToLoad = new PriorityBlockingQueue();
+Queue<ThumbableTile> ThumbabletilesToLoad = new PriorityBlockingQueue();
 
 class ThumbnailWorker extends Thread {
   int workerID;
-  ImageTile tile;
+  ThumbableTile tile;
 
   ThumbnailWorker(int _workerID) {
     this.workerID = _workerID;
   }
 
   void sleeep(int milis) {
-    if (tile == null) try {
+    try {
       sleep(milis);
     }
     catch(Exception e) {
@@ -105,33 +108,45 @@ class ThumbnailWorker extends Thread {
   public void run() {
     while (true) {
       for (int i = 0; tile == null && i < 100; i++) {
-        tile = pollNextImagetileToLoad();
-        sleeep(10);
+        tile = pollNextThumbabletileToLoad();
+        if (tile == null) sleeep(10);
       }
       while (tile == null) {
-        tile = pollNextImagetileToLoad();
-        if (tile == null) try {
-          sleeep(1000);
-        }
-        catch(Exception e) {
-        }
+        tile = pollNextThumbabletileToLoad();
+        if (tile == null) sleeep(1000);
       }
 
       tile.workerID = this.workerID;
-      File thumbnail = new File(tile.image.getThumbnailAbsoluteLocation());
+      File thumbnail = new File(tile.tfile.getThumbnailAbsoluteLocation());
       if (!thumbnail.exists()) {
 
-        PImage full = loadImg(ROOT + "/" + tile.image.location);
+        PImage full;
+
+        String runtimeClassName = tile.tfile.getClass().getSimpleName();
+        if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
+        else if (runtimeClassName.equals("TMovie")) {
+          // Movie stuffs!
+          Movie mov = new Movie(SKETCH, ROOT + "/" + tile.tfile.location);
+          mov.play();
+          while (!mov.available()) sleeep(10);
+          mov.read();
+          mov.stop();
+          full = mov;
+        } else {
+          println("RUNTIME ERROR!!!");
+          println("No implementation provided for generating a thumbail for TFiles of type "+runtimeClassName);
+          full = createImage(400, 300, RGB);
+          for (int i = 0; i < full.pixels.length; i++) full.pixels[i] = color(random(255)); // let's have some fun, eyy
+          // I don't know of a gracefull way to throw exceptions, especially within a thread...
+        }
 
         // SHRINK
-        tile.status = tile.SHRINKING;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        setStatus(tile.SHRINKING);
 
         int scale = floor(sqrt(full.pixels.length / 80000));
         int nw = full.width / scale;
         int nh = full.height / scale;
-        tile.pimg = createImage(nw, nh, RGB);
+        tile.thumbnail = createImage(nw, nh, RGB);
 
         //println("scaling by factor of scale " + scale);
         //println("shrinking "+tile.image.location);
@@ -141,11 +156,9 @@ class ThumbnailWorker extends Thread {
         println("x"+scale+" : "+full.width+"x"+full.height+" => "+nw+"x"+nh);
 
         full.resize(nw, nh);
-        tile.pimg = full.copy();
+        tile.thumbnail = full.copy();
 
-        tile.status = tile.DONE;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        setStatus(tile.DONE);
 
         //SAVE
         full.save(thumbnail.getAbsolutePath());
@@ -154,23 +167,22 @@ class ThumbnailWorker extends Thread {
         System.gc();
       } else {
         // Load thumbnail
-        tile.pimg = loadImg(thumbnail.getAbsolutePath());
-        tile.status = tile.DONE;
-        tile.repaint = true;
-        if (tile.visible) redraw();
+        tile.thumbnail = loadImg(thumbnail.getAbsolutePath());
+        setStatus(tile.DONE);
       }
-
-
-
       tile = null;
     }
   }
 
+  void setStatus(int status) {
+    tile.status = status;
+    tile.repaint = true;
+    if (tile.visible) reedraw();
+  }
+
   PImage loadImg(String str) {
     // LOAD
-    tile.status = tile.LOADING;
-    tile.repaint = true;
-    if (tile.visible) redraw();
+    setStatus(tile.LOADING);
 
     //println("loading "+tile.image.location);
     PImage full = loadImage(str);
