@@ -1,4 +1,4 @@
-class FullView extends Context {
+class FullView extends ConcreteContext {
   TFile[] tfiles;
   int indx;
   Context ctx;

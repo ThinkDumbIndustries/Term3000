@@ -14,7 +14,7 @@ class TMovie extends TThumbable {
   }
 }
 
-class MovieContext extends Context {
+class MovieContext extends ConcreteContext {
   Movie mov;
 
   MovieContext(TMovie tmov, int _WIDTH, int _HEIGHT) {

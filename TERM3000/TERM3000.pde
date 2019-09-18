@@ -13,7 +13,7 @@ import javafx.beans.Observable;
 void setup() {
   size(500, 300, FX2D);
   //fullScreen(FX2D);
-  //surface.setResizable(true);
+  surface.setResizable(true);
 
   //noStroke();
 

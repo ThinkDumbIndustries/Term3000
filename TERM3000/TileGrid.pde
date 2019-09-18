@@ -1,6 +1,6 @@
 final int MIN_SCROLL_BAR_WIDTH = 10;
 
-class TileGrid extends Context {
+class TileGrid extends ConcreteContext {
   final float IMAGE_RATIO = 3.0 / 4;
   int TILE_WIDTH, TILE_HEIGHT;
   int TILES_PER_LINE;

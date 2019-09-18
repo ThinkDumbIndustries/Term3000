@@ -28,7 +28,7 @@ void popContext() {
   if (contextHistory.isEmpty()) exit();
   else {
     Context restored = contextHistory.pop();
-    if (restored.WIDTH != width || restored.HEIGHT != height) restored.resize(width, height);
+    if (!restored.hasSize(width, height)) restored.resize(width, height);
     restored.flagEverythingForRepaint();
     repaint_background = true;
     if (context != null) {
@@ -67,11 +67,30 @@ void keyReleased() {
   context.keyReleased();
 }
 
-abstract class Context {
+interface Context {
+  boolean hasSize(int _WIDTH, int _HEIGHT);
+  void resize(int _WIDTH, int _HEIGHT);
+  void deconstruct();
+  void flagEverythingForRepaint();
+  void display();
+  void mousePressed();
+  void mouseClicked();
+  void mouseReleased();
+  void mouseMoved();
+  void mouseDragged();
+  void mouseWheel(MouseEvent event);
+  void keyPressed();
+  void keyReleased();
+}
+
+abstract class ConcreteContext implements Context {
   int WIDTH, HEIGHT;
-  Context(int _WIDTH, int _HEIGHT) {
+  ConcreteContext(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  boolean hasSize(int _WIDTH, int _HEIGHT) {
+    return WIDTH == _WIDTH && HEIGHT == _HEIGHT;
   }
   void resize(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
@@ -107,7 +126,7 @@ interface Contextable {
   Context toContext(int _WIDTH, int _HEIGHT);
 }
 
-class BlankContext extends Context {
+class BlankContext extends ConcreteContext {
   BlankContext(int _WIDTH, int _HEIGHT) {
     super(_WIDTH, _HEIGHT);
   }
