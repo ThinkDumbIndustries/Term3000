@@ -57,8 +57,7 @@ class TileGrid extends Context {
     LINES_PER_SCREEN = 1 + (HEIGHT - 1) / TILE_HEIGHT;
 
     MAX_LINE = max(0, ((tiles.length - 1) / TILES_PER_LINE) - LINES_PER_SCREEN + 2);
-
-    bar = new ScrollBar(MAX_LINE, SCROLL_BAR_WIDTH, HEIGHT, float(LINES_PER_SCREEN) / (1 + tiles.length / TILES_PER_LINE));
+    bar = new ScrollBar(MAX_LINE, SCROLL_BAR_WIDTH, HEIGHT, float(LINES_PER_SCREEN) / (MAX_LINE + LINES_PER_SCREEN));
 
     setLine(floor(float(current_line * OLD_TILES_PER_LINE) / TILES_PER_LINE), true); // important for setting visible up
   }

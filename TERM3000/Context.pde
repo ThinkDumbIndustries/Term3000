@@ -30,6 +30,7 @@ void popContext() {
     Context restored = contextHistory.pop();
     if (restored.WIDTH != width || restored.HEIGHT != height) restored.resize(width, height);
     restored.flagEverythingForRepaint();
+    repaint_background = true;
     if (context != null) {
       context.deconstruct();
     }

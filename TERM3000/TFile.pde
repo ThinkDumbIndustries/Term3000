@@ -13,7 +13,7 @@ void loadFiles() {
 
 // Factory for files
 TFile createFile(String path) {
-  String ext = path.substring(path.indexOf('.')).toLowerCase();
+  String ext = path.substring(path.lastIndexOf('.')).toLowerCase();
   if (extIsImage(ext)) return new TImage(path);
   else if (extIsMovie(ext)) return new TMovie(path);
   return new NoFile(path);
@@ -57,7 +57,7 @@ class NoFile extends TFile {
 
 abstract class TThumbable extends TFile {
   String getThumbnailAbsoluteLocation() {
-    int indx = location.indexOf('.');
+    int indx = location.lastIndexOf('.');
     return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
     //return ROOT + "/thumbnailstif/" + location.substring(0, indx) + ".tif";
   }

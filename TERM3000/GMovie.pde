@@ -39,4 +39,13 @@ class MovieContext extends Context {
     image(mov, 0, 0);
     popMatrix();
   }
+
+  boolean playing = true;
+
+  void keyPressed() {
+    if (key != ' ') return;
+    if (playing) mov.pause();
+    else mov.play();
+    playing = !playing;
+  }
 }

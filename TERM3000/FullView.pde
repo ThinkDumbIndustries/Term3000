@@ -20,6 +20,10 @@ class FullView extends Context {
     int old_indx = indx;
     if (keyCode == LEFT) indx = max(0, indx - 1);
     else if (keyCode == RIGHT) indx = min(indx + 1, files.length - 1);
+    else {
+      ctx.keyPressed();
+      return;
+    }
     if (old_indx == indx) return;
     ctx.deconstruct();
     ctx = tfiles[indx].toContext(WIDTH, HEIGHT);
