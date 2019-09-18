@@ -10,6 +10,12 @@ class FullView extends Context {
     ctx = tfiles[indx].toContext(WIDTH, HEIGHT);
   }
 
+  void resize(int _WIDTH, int _HEIGHT) {
+    this.WIDTH = _WIDTH;
+    this.HEIGHT = _HEIGHT;
+    ctx.resize(WIDTH, HEIGHT);
+  }
+
   void keyPressed() {
     int old_indx = indx;
     if (keyCode == LEFT) indx = max(0, indx - 1);

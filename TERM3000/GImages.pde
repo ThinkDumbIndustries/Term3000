@@ -22,6 +22,13 @@ class ImageContext extends Context {
     scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
   }
 
+  void resize(int _WIDTH, int _HEIGHT) {
+    this.WIDTH = _WIDTH;
+    this.HEIGHT = _HEIGHT;
+    scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
+    println("Resized in ImageContext");
+  }
+
   void display() {
     fill(0);
     noStroke();

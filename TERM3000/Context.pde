@@ -67,6 +67,8 @@ abstract class Context {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
   }
+  void resize(int _WIDTH, int _HEIGHT) {
+  }
   void deconstruct() {
   }
   void flagEverythingForRepaint() {
