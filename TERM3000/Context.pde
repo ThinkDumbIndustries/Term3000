@@ -43,7 +43,7 @@ void mousePressed() {
   context.mousePressed();
 }
 void mouseClicked() {
-  context.mousePressed();
+  context.mouseClicked();
 }
 void mouseReleased() {
   context.mouseReleased();
@@ -70,6 +70,8 @@ void keyReleased() {
 interface Context {
   boolean hasSize(int _WIDTH, int _HEIGHT);
   void resize(int _WIDTH, int _HEIGHT);
+  int minWidth();
+  int minHeight();
   void deconstruct();
   void flagEverythingForRepaint();
   void display();
@@ -95,6 +97,12 @@ abstract class ConcreteContext implements Context {
   void resize(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  int minWidth() {
+    return 128;
+  }
+  int minHeight() {
+    return 128;
   }
   void deconstruct() {
   }
@@ -126,11 +134,63 @@ interface Contextable {
   Context toContext(int _WIDTH, int _HEIGHT);
 }
 
-class BlankContext extends ConcreteContext {
-  BlankContext(int _WIDTH, int _HEIGHT) {
+class TestContext extends ConcreteContext {
+  String[] lines;
+  int pos = 0;
+  TestContext(int _WIDTH, int _HEIGHT) {
     super(_WIDTH, _HEIGHT);
+    lines = new String[] {"", "", "", "", "", ""};
   }
   void display() {
-    background(0);
+    pushStyle();
+    pushMatrix();
+    noStroke();
+    fill(64);
+    rect(0, 0, WIDTH, HEIGHT);
+    fill(255);
+    ellipse(WIDTH*.5, HEIGHT*.5, WIDTH, HEIGHT);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    text(join(lines, '\n'), 0, 0, WIDTH, HEIGHT);
+    popStyle();
+    popMatrix();
+  }
+
+  void addLine(String line) {
+    lines[pos] = line;
+    pos = (pos + 1) % lines.length;
+    reedraw();
+  }
+
+
+  void deconstruct() {
+    addLine("deconstruct");
+  }
+  void flagEverythingForRepaint() {
+    addLine("flagEverythingForRepaint");
+  }
+  void mousePressed() {
+    addLine("mousePressed: " + mouseX + "," + mouseY);
+  }
+  void mouseClicked() {
+    addLine("mouseClicked: " + mouseX + "," + mouseY);
+  }
+  void mouseReleased() {
+    addLine("mouseReleased: " + mouseX + "," + mouseY);
+  }
+  void mouseMoved() {
+    addLine("mouseMoved: " + mouseX + "," + mouseY);
+  }
+  void mouseDragged() {
+    addLine("mouseDragged: " + mouseX + "," + mouseY);
+  }
+  void mouseWheel(MouseEvent event) {
+    addLine("mouseWheel: " + event.getCount());
+  }
+  void keyPressed() {
+    addLine("keyPressed: " + keyCode + " : " + key);
+  }
+  void keyReleased() {
+    addLine("keyReleased: " + keyCode + " : " + key);
   }
 }

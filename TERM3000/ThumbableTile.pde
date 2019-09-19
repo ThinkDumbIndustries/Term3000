@@ -8,11 +8,12 @@ class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
   TThumbable tfile;
   PImage thumbnail;
 
-  final int ERROR = 0;
-  final int WAITING = 1;
-  final int LOADING = 2;
-  final int SHRINKING = 3;
-  final int DONE = 4;
+  static final int 
+    ERROR     = 0, 
+    WAITING   = 1, 
+    LOADING   = 2, 
+    SHRINKING = 3, 
+    DONE      = 4;
   int status;
   int workerID;
   int priority;
@@ -141,7 +142,7 @@ class ThumbnailWorker extends Thread {
         }
 
         // SHRINK
-        setStatus(tile.SHRINKING);
+        setStatus(ThumbableTile.SHRINKING);
 
         int scale = floor(sqrt(full.pixels.length / 80000));
         int nw = full.width / scale;
@@ -158,7 +159,7 @@ class ThumbnailWorker extends Thread {
         full.resize(nw, nh);
         tile.thumbnail = full.copy();
 
-        setStatus(tile.DONE);
+        setStatus(ThumbableTile.DONE);
 
         //SAVE
         full.save(thumbnail.getAbsolutePath());
@@ -168,7 +169,7 @@ class ThumbnailWorker extends Thread {
       } else {
         // Load thumbnail
         tile.thumbnail = loadImg(thumbnail.getAbsolutePath());
-        setStatus(tile.DONE);
+        setStatus(ThumbableTile.DONE);
       }
       tile = null;
     }
@@ -182,7 +183,7 @@ class ThumbnailWorker extends Thread {
 
   PImage loadImg(String str) {
     // LOAD
-    setStatus(tile.LOADING);
+    setStatus(ThumbableTile.LOADING);
 
     //println("loading "+tile.image.location);
     PImage full = loadImage(str);
