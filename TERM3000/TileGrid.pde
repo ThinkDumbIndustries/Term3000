@@ -12,6 +12,8 @@ class TileGrid extends ConcreteContext {
 
   Tile[] tiles;
 
+  boolean repaint_background;
+
   TileGrid(int _WIDTH, int _HEIGHT, int _TILES_PER_LINE) {
     super(_WIDTH, _HEIGHT);
     //setupColorTiles();
@@ -152,6 +154,12 @@ class TileGrid extends ConcreteContext {
   }
 
   void display() {
+    if (repaint_background) {
+      fill(0);
+      noStroke();
+      rect(0, 0, WIDTH, HEIGHT);
+    }
+    repaint_background = false;
     pushMatrix();
     for (int j = 0; j < LINES_PER_SCREEN; j++) {
       pushMatrix();

@@ -149,6 +149,8 @@ class TestContext extends ConcreteContext {
     rect(0, 0, WIDTH, HEIGHT);
     fill(255);
     ellipse(WIDTH*.5, HEIGHT*.5, WIDTH, HEIGHT);
+    fill(220);
+    ellipse(WIDTH*.5, HEIGHT*.5, minWidth(), minHeight());
     fill(0);
     textAlign(CENTER, CENTER);
     text(join(lines, '\n'), 0, 0, WIDTH, HEIGHT);
