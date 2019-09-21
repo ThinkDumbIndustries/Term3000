@@ -1,4 +1,10 @@
-class TImage extends TThumbable {
+/*
+G prefix for 'groupment of classes', notably:
+ + class TImage extends TThumbable 
+ + class ImageContext extends ConcreteContext
+ */
+
+class TImage extends ThumbableFile {
   TImage(String _location) {
     this.location = _location;
   }

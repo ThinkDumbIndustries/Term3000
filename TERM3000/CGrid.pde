@@ -21,7 +21,7 @@ class TileGrid extends ConcreteContext {
     setTilesPerLine(_TILES_PER_LINE, true);
   }
 
-  void setupTiles(TFile[] files) {
+  void setupTiles(ThumbableFile[] files) {
     tiles = new Tile[files.length];
     for (int i = 0; i < files.length; i++) {
       tiles[i] = files[i].makeTile(i);

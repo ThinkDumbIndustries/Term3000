@@ -1,6 +1,12 @@
+/*
+G prefix for 'groupment of classes', notably:
+ + class TMovie extends TThumbable 
+ + class MovieContext extends ConcreteContext 
+ */
+
 import processing.video.*;
 
-class TMovie extends TThumbable {
+class TMovie extends ThumbableFile {
   TMovie(String _location) {
     this.location = _location;
   }
