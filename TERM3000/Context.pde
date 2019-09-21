@@ -141,6 +141,12 @@ class TestContext extends ConcreteContext {
     super(_WIDTH, _HEIGHT);
     lines = new String[] {"", "", "", "", "", ""};
   }
+
+  void resize(int _WIDTH, int _HEIGHT) {
+    super.resize(_WIDTH, _HEIGHT);
+    addLine("resize: " + _WIDTH + "x"+ _HEIGHT);
+  }
+
   void display() {
     pushStyle();
     pushMatrix();

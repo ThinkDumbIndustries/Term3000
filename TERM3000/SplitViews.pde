@@ -13,9 +13,11 @@ abstract class SplitContextHandler extends ConcreteContext {
   int count; // number of contexts
   Context[] ctxs;
   int[] sizes;
+  boolean[] doResizeFlag;
   int[] poses; // of dividers
   int[] minposes;
   int[] maxposes;
+  int sumMinSizee, minSizeePerp;
 
   SplitContextHandler(int _WIDTH, int _HEIGHT, int _DIVIDER_THICKNESS, int _count, Context[] _ctxs, int[] _sizes) {
     super(_WIDTH, _HEIGHT);
@@ -28,20 +30,25 @@ abstract class SplitContextHandler extends ConcreteContext {
     poses = new int[count + 1];
     minposes = new int[count + 1];
     maxposes = new int[count + 1];
+    doResizeFlag = new boolean[count]; 
+    minSizeePerp = 0;
+    sumMinSizee = (count - 1) * DIVIDER_THICKNESS;
     int total = - DIVIDER_THICKNESS;
-    int mintotal = -DIVIDER_THICKNESS;
+    int mintotal = - DIVIDER_THICKNESS;
     for (int i = 0; i < count; i++) {
-      if (sizes[i] < minSizee(ctxs[i])) throw new IllegalArgumentException("sizes[i] < getSizee(ctxs[i])");
+      if (sizes[i] < minSizee(i)) throw new IllegalArgumentException("sizes[i] < getSizee(ctxs[i])");
+      minSizeePerp = max(minSizeePerp, minSizeePerp(i));
+      sumMinSizee += minSizee(i);
       poses[i] = total;
       minposes[i] = mintotal;
-      resizee(i);
+      doResizeFlag[i] = true;
       total += sizes[i] + DIVIDER_THICKNESS;
-      mintotal += minSizee(ctxs[i]) + DIVIDER_THICKNESS;
+      mintotal += minSizee(i) + DIVIDER_THICKNESS;
     }
-    int maxtotal = getSizee();
+    int maxtotal = 0;
     maxposes[count] = maxtotal;
     for (int i = count - 1; i >= 0; i--) {
-      maxtotal -= minSizee(ctxs[i]) + DIVIDER_THICKNESS;
+      maxtotal -= minSizee(i) + DIVIDER_THICKNESS;
       maxposes[i] = maxtotal;
     }
     poses[count] = total;
@@ -50,7 +57,8 @@ abstract class SplitContextHandler extends ConcreteContext {
 
   void resize(int _WIDTH, int _HEIGHT) {
     super.resize(_WIDTH, _HEIGHT);
-    for (int i = 0; i < count; i++) resizee(i);
+    dividerMoved(count, getSizee());
+    for (int i = 0; i < count; i++) doResizeFlag[i] = true;
   }
 
   void setFocusMode(int mode) {
@@ -58,39 +66,40 @@ abstract class SplitContextHandler extends ConcreteContext {
   }
 
   abstract int getSizee();
+  abstract int getSizeePerp();
   abstract void resizee(int id);
-  abstract int minSizee(Context ctx);
+  abstract boolean hasSizee(int id);
+  abstract int minSizee(int id);
+  abstract int minSizeePerp(int id);
   abstract int getMouse(); // what luck that mouseX and mouseY are global and mutable!
   abstract void setMouse(int val);
   abstract void translatee(int pos);
   abstract void displayDivider();
 
 
-  void dividerMoved() { // dividerPressed == true, mouseDragged:
-    boolean[] doResize = new boolean[count]; 
-    poses[dividerId] = constrain(getMouse() - DIVIDER_THICKNESS / 2, minposes[dividerId], maxposes[dividerId]);
-    sizes[dividerId - 1] = poses[dividerId] - poses[dividerId - 1] - DIVIDER_THICKNESS;
-    sizes[dividerId] = poses[dividerId + 1] - poses[dividerId] - DIVIDER_THICKNESS;
-    doResize[dividerId - 1] = true;
-    doResize[dividerId] = true;
+  void dividerMoved(int divid, int toPos) { // dividerPressed == true, mouseDragged:
+    poses[divid] = constrain(toPos, minposes[divid], getSizee() + maxposes[divid]);
+    sizes[divid - 1] = poses[divid] - poses[divid - 1] - DIVIDER_THICKNESS;
+    if (divid < count) sizes[divid] = poses[divid + 1] - poses[divid] - DIVIDER_THICKNESS;
+    doResizeFlag[divid - 1] = true;
+    if (divid < count) doResizeFlag[divid] = true;
     // ripple changes if necessary
-    for (int i = dividerId - 1; i > 0; i--) {
-      if (sizes[i] >= minSizee(ctxs[i])) break;
-      poses[i] = poses[i + 1] - minSizee(ctxs[i]) - DIVIDER_THICKNESS;
-      sizes[i] = minSizee(ctxs[i]);
+    for (int i = divid - 1; i > 0; i--) {
+      if (sizes[i] >= minSizee(i)) break;
+      poses[i] = poses[i + 1] - minSizee(i) - DIVIDER_THICKNESS;
+      sizes[i] = minSizee(i);
       sizes[i - 1] = poses[i] - poses[i - 1] - DIVIDER_THICKNESS;
-      doResize[i] = true;
-      doResize[i - 1] = true;
+      doResizeFlag[i] = true;
+      doResizeFlag[i - 1] = true;
     }
-    for (int i = dividerId; i < count - 1; i++) { // -1
-      if (sizes[i] >= minSizee(ctxs[i])) break;
-      poses[i + 1] = poses[i] + minSizee(ctxs[i]) + DIVIDER_THICKNESS;
-      sizes[i] = minSizee(ctxs[i]);
+    for (int i = divid; i < count - 1; i++) { // -1
+      if (sizes[i] >= minSizee(i)) break;
+      poses[i + 1] = poses[i] + minSizee(i) + DIVIDER_THICKNESS;
+      sizes[i] = minSizee(i);
       sizes[i + 1] = poses[i + 2] - poses[i + 1] - DIVIDER_THICKNESS;
-      doResize[i] = true;
-      doResize[i + 1] = true;
+      doResizeFlag[i] = true;
+      doResizeFlag[i + 1] = true;
     }
-    for (int i = 0; i < count; i++) if (doResize[i]) resizee(i);
     reedraw();
   }
 
@@ -130,7 +139,7 @@ abstract class SplitContextHandler extends ConcreteContext {
     setMouse(temp);
   }
   void mouseDragged() {
-    if (dividerPressed) dividerMoved(); 
+    if (dividerPressed) dividerMoved(dividerId, getMouse() - DIVIDER_THICKNESS / 2); 
     else ctxs[focusedId].mouseDragged();
   }
   void mouseWheel(MouseEvent event) {
@@ -144,14 +153,18 @@ abstract class SplitContextHandler extends ConcreteContext {
   }
 
   void display() {
+    for (int i = 0; i < count; i++ )if (doResizeFlag[i]) {
+      if (!hasSizee(i)) resizee(i);
+      doResizeFlag[i] = false;
+    }
     pushMatrix(); 
-    ctxs[0].display(); 
+    ctxs[0].display();
     for (int i = 1; i < count; i++) {
       translatee(sizes[i - 1]);
       fill(128); 
       noStroke(); 
       displayDivider(); 
-      translatee(DIVIDER_THICKNESS); 
+      translatee(DIVIDER_THICKNESS);
       ctxs[i].display();
     }
     popMatrix();
@@ -162,14 +175,29 @@ class HorizontalSplit extends SplitContextHandler {
   HorizontalSplit(int _WIDTH, int _HEIGHT, int _DIVIDER_THICKNESS, int _count, Context[] _ctxs, int[] _sizes) {
     super(_WIDTH, _HEIGHT, _DIVIDER_THICKNESS, _count, _ctxs, _sizes);
   }
+  @Override int minWidth() {
+    return sumMinSizee;
+  }
+  @Override int minHeight() {
+    return minSizeePerp;
+  }
   int getSizee() {
     return WIDTH;
+  }
+  int getSizeePerp() {
+    return HEIGHT;
+  }
+  boolean hasSizee(int id) {
+    return ctxs[id].hasSize(sizes[id], HEIGHT);
   }
   void resizee(int id) {
     ctxs[id].resize(sizes[id], HEIGHT);
   }
-  int minSizee(Context ctx) {
-    return ctx.minWidth();
+  int minSizee(int id) {
+    return ctxs[id].minWidth();
+  }
+  int minSizeePerp(int id) {
+    return ctxs[id].minHeight();
   }
   int getMouse() {
     return mouseX;
@@ -212,14 +240,29 @@ class VerticalSplit extends SplitContextHandler {
   VerticalSplit(int _WIDTH, int _HEIGHT, int _DIVIDER_THICKNESS, int _count, Context[] _ctxs, int[] _sizes) {
     super(_WIDTH, _HEIGHT, _DIVIDER_THICKNESS, _count, _ctxs, _sizes);
   }
+  @Override int minWidth() {
+    return minSizeePerp;
+  }
+  @Override int minHeight() {
+    return sumMinSizee;
+  }
   int getSizee() {
     return HEIGHT;
+  }
+  int getSizeePerp() {
+    return WIDTH;
   }
   void resizee(int id) {
     ctxs[id].resize(WIDTH, sizes[id]);
   }
-  int minSizee(Context ctx) {
-    return ctx.minHeight();
+  boolean hasSizee(int id) {
+    return ctxs[id].hasSize(WIDTH, sizes[id]);
+  }
+  int minSizee(int id) {
+    return ctxs[id].minHeight();
+  }
+  int minSizeePerp(int id) {
+    return ctxs[id].minWidth();
   }
   int getMouse() {
     return mouseY;
