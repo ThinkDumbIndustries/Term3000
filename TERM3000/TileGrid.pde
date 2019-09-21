@@ -40,8 +40,7 @@ class TileGrid extends ConcreteContext {
   }
 
   void resize(int _WIDTH, int _HEIGHT) {
-    this.WIDTH = _WIDTH;
-    this.HEIGHT = _HEIGHT;
+    super.resize(_WIDTH, _HEIGHT);
     setTilesPerLine(TILES_PER_LINE, true);
   }
 
@@ -128,6 +127,7 @@ class TileGrid extends ConcreteContext {
   }
 
   void mouseDragged() {
+    if (!bar_dragged) return;
     bar.setScreenLocation(mouseY);
     setLine(bar.location, false);
     reedraw();
@@ -144,13 +144,6 @@ class TileGrid extends ConcreteContext {
 
   void flagEverythingForRepaint() {
     for (int i = 0; i< tiles.length; i++) tiles[i].repaint = true;
-    //for (int j = 0; j < LINES_PER_SCREEN; j++) {
-    //  for (int i = 0; i < TILES_PER_LINE; i++) {
-    //    int id = (j + current_line) * TILES_PER_LINE + i;
-    //    if (id >= tiles.length) break;
-    //    tiles[id].repaint = true;
-    //  }
-    //}
   }
 
   void display() {
@@ -158,8 +151,8 @@ class TileGrid extends ConcreteContext {
       fill(0);
       noStroke();
       rect(0, 0, WIDTH, HEIGHT);
+      repaint_background = false;
     }
-    repaint_background = false;
     pushMatrix();
     for (int j = 0; j < LINES_PER_SCREEN; j++) {
       pushMatrix();

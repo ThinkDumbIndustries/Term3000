@@ -15,8 +15,7 @@ class FullView extends ConcreteContext {
   }
 
   void resize(int _WIDTH, int _HEIGHT) {
-    this.WIDTH = _WIDTH;
-    this.HEIGHT = _HEIGHT;
+    super.resize(_WIDTH, _HEIGHT);
     ctx.resize(WIDTH, HEIGHT);
   }
 

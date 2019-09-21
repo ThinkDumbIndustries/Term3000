@@ -23,8 +23,7 @@ class ImageContext extends ConcreteContext {
   }
 
   void resize(int _WIDTH, int _HEIGHT) {
-    this.WIDTH = _WIDTH;
-    this.HEIGHT = _HEIGHT;
+    super.resize(_WIDTH, _HEIGHT);
     scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
   }
 

@@ -1,7 +1,7 @@
 import java.util.Stack;
 
-Context context;
-Stack<Context> contextHistory;
+Context context = new TestContext(width, height);
+Stack<Context> contextHistory = new Stack();
 
 void initializeContext(Context _context) {
   contextHistory = new Stack();
@@ -30,7 +30,7 @@ void popContext() {
     Context restored = contextHistory.pop();
     if (!restored.hasSize(width, height)) restored.resize(width, height);
     restored.flagEverythingForRepaint();
-    repaint_background = true;
+    //repaint_background = true;
     if (context != null) {
       context.deconstruct();
     }
