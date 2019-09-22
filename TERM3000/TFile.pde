@@ -4,26 +4,23 @@ G prefix for 'groupment of classes', notably:
  + class NoFile extends TFile
  */
 
-ThumbableFile[] files;
-
 import java.util.Arrays;
-//import java.util.stream.Stream;
 
-void loadFiles() {
-  File folder = new File(ROOT + "/2014/08-Aout");
+ThumbableFile[] loadThumbableFiles(String folderLocation) {
+  File folder = new File(ROOT + "/" + folderLocation);
   println("Looking for files in: " + folder.getAbsolutePath());
   File[] children = folder.listFiles();
-  files = new ThumbableFile[children.length];
+  ThumbableFile[] files = new ThumbableFile[children.length];
   int id = 0;
   for (int i = 0; i < children.length; i++) {
-    String path = "2014/08-Aout/" + children[i].getName();
+    String path = folderLocation + "/" + children[i].getName();
     TFile tf = createFile(path);
     if (ThumbableFile.class.isAssignableFrom(tf.getClass())) {
       files[id] = (ThumbableFile)tf;
       id++;
     }
   }
-  files = Arrays.copyOf(files, id);
+  return Arrays.copyOf(files, id);
 }
 
 // Factory for files
