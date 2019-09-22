@@ -72,6 +72,10 @@ abstract class SplitContextHandler extends ConcreteContext {
     this.focusMode = mode;
   }
 
+  void deconstruct() {
+    for (int i = 0; i < count; i++) ctxs[i].deconstruct();
+  }
+
   abstract int getSizee();
   abstract int getSizeePerp();
   abstract void resizee(int id);
