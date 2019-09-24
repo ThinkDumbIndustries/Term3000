@@ -5,11 +5,13 @@ G prefix for 'groupment of classes', notably:
  */
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 ThumbableFile[] loadThumbableFiles(String folderLocation) {
   File folder = new File(ROOT + "/" + folderLocation);
   println("Looking for files in: " + folder.getAbsolutePath());
   File[] children = folder.listFiles();
+  Arrays.sort(children, new FileComparator());
   ThumbableFile[] files = new ThumbableFile[children.length];
   int id = 0;
   for (int i = 0; i < children.length; i++) {
@@ -19,8 +21,14 @@ ThumbableFile[] loadThumbableFiles(String folderLocation) {
       files[id] = (ThumbableFile)tf;
       id++;
     }
-  }
+  } 
   return Arrays.copyOf(files, id);
+}
+
+class FileComparator implements Comparator<File> {
+  int compare(File f1, File f2) {
+    return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+  }
 }
 
 // Factory for files
