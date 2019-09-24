@@ -71,14 +71,20 @@ class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
     priority = -frameCount*100 + id;
     updatePriorityThumbabletile(this);
 
-    rect(0, 0, w, h);
-    pushStyle();
-    fill(0);
-    textAlign(CENTER, CENTER);
-    if (status >= LOADING) text(str(workerID), 0, 0, w, h/2);
-    fill(255);
-    text(str(priority), 0, h/2, w, h/2);
-    popStyle();
+    //fill(128);
+    noStroke();
+    float r = 15;
+    ellipse(random(r, w-r), random(r, h-r), 2*r, 2*r);
+    reedraw();
+    repaint = true;
+    //rect(0, 0, w, h);
+    //pushStyle();
+    //fill(0);
+    //textAlign(CENTER, CENTER);
+    //if (status >= LOADING) text(str(workerID), 0, 0, w, h/2);
+    //fill(255);
+    //text(str(priority), 0, h/2, w, h/2);
+    //popStyle();
   }
 }
 
@@ -132,6 +138,7 @@ class ThumbnailWorker extends Thread {
         if (tile == null) sleeep(1000);
       }
 
+      setStatus(ThumbableTile.LOADING);
       tile.workerID = this.workerID;
       File thumbnail = new File(tile.tfile.getThumbnailAbsoluteLocation());
       if (!thumbnail.exists()) {
