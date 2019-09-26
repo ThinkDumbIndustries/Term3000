@@ -15,10 +15,11 @@ void setup() {
   //fullScreen(FX2D);
   surface.setResizable(true);
 
+  setupTagManager();
   setupThumbnailWorkers();
   loadDates();
 
-  initializeContext(new DateNavigatorContext(width, height));
+  //initializeContext(new DateNavigatorContext(width, height));
 
   PSurfaceFX fx = (PSurfaceFX)surface;
   Canvas canvas = (Canvas) fx.getNative();
