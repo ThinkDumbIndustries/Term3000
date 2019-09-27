@@ -30,39 +30,31 @@ void setupTagManager() {
 
 class TagManager {
   ArrayList<Tag> alltags; // every tag has a unique ID
-  ArrayList<BitSet> reachable; // stores the reacability relation
+  ArrayList<BitSet> reachable; // stores the reachability relation
   // X is a subtag of Y
 
   TagManager() {
-    alltags = new ArrayList<Tag>();
-    reachable = new ArrayList<BitSet>();
+    alltags = new ArrayList<Tag>(1);
+    alltags.add(new Tag(0, "Tous"));
+    reachable = new ArrayList<BitSet>(1);
+    reachable.add(new BitSet());
   }
 
-  void save() {
+  public void save() {
+    reduce(); //if DTI is respected, should not be necessary
     PrintWriter out = createWriter(ROOT + "/tags.csv");
     out.println(alltags.size());
     for (int i = 0; i < alltags.size(); i++) {
       out.print(alltags.get(i).name);
-      for (int j = 0; j < alltags.size(); j++) {
-        if (i == j) break;
-        if (!isASubtagOf(i, j)) break;
-        boolean isPrimitive = true;
-        for (int k = 0; k < alltags.size(); k++) {
-          if (k != i && k!= j && isASubtagOf(i, k) && isASubtagOf(k, j)) {
-            isPrimitive = false;
-            break;
-          }
-        }
-        if (isPrimitive) out.print("," + j);
-      }
+      for (Tag parent : alltags.get(i).parents) out.print("," + parent.id);
       out.println();
-    }
+    }    
     out.flush();
     out.close();
     exit();
   }
 
-  void load() {
+  public void load() {
     BufferedReader in = createReader(ROOT + "/tags.csv");
     try {
       int tags = int(in.readLine());
@@ -76,7 +68,12 @@ class TagManager {
         Tag tag = alltags.get(i);
         String[] split = split(in.readLine(), ',');
         tag.name = split[0];
-        for (int c = 1; c < split.length; c++) makeASubtagOf(i, int(split[c]));
+        for (int c = 1; c < split.length; c++) {
+          int parentId = int(split[c]);
+          makeASubtagOf(i, parentId);
+          alltags.get(i).parents.add(alltags.get(parentId));
+          alltags.get(parentId).children.add(alltags.get(i));
+        }
       }
     } 
     catch (Exception e) {
@@ -85,17 +82,47 @@ class TagManager {
     }
   }
 
-  Tag addTag(String name) {
+  private void reduce() {
+    for (Tag t : alltags) {
+      t.parents = new ArrayList<Tag>();
+      t.children = new ArrayList<Tag>();
+    }
+    for (int i = 0; i < alltags.size(); i++) {
+      for (int j = 0; j < alltags.size(); j++) {
+        if (i == j) break;
+        if (!isASubtagOf(i, j)) break;
+        boolean isPrimitive = true;
+        for (int k = 0; k < alltags.size(); k++) {
+          if (k != i && k!= j && isASubtagOf(i, k) && isASubtagOf(k, j)) {
+            isPrimitive = false;
+            break;
+          }
+        }
+        if (isPrimitive) {
+          alltags.get(i).parents.add(alltags.get(j));
+          alltags.get(j).children.add(alltags.get(i));
+        }
+      }
+    }
+  }
+
+  private void expand() {
+  }
+
+  public Tag addTag(String name) {
     Tag ntag = new Tag(alltags.size(), name);
+    ntag.parents.add(alltags.get(0));
     alltags.add(ntag);
-    reachable.add(new BitSet());
+    BitSet bs = new BitSet();
+    bs.set(0); //Every tag is a child of source
+    reachable.add(bs);
     return ntag;
   }
 
-  void makeASubtagOf(int child, int parent) {
+  private void makeASubtagOf(int child, int parent) {
     if (isASubtagOf(child, parent)) return;
-    //parent.children.add(child);
-    //child.parents.add(parent);
+    //alltags.get(parent).children.add(alltags.get(child));
+    //alltags.get(child).parents.add(alltags.get(parent));
     for (int i = 0; i < alltags.size(); i++) { 
       BitSet bs = reachable.get(i);
       if (isASubtagOf(i, child)) {
@@ -105,12 +132,12 @@ class TagManager {
     }
   }
 
-  boolean isASubtagOf(int child, int parent) {
+  private boolean isASubtagOf(int child, int parent) {
     if (child == parent) return true;
     return reachable.get(child).get(parent);
   }
 
-  void printt() {
+  public void printt() {
     for (int i = 0; i < alltags.size(); i++) {
       for (int j = 0; j < alltags.size(); j++) {
         if (isASubtagOf(i, j)) print(" X");
@@ -125,13 +152,13 @@ class TagManager {
 class Tag {
   int id;
   String name;
-  //ArrayList<Tag> parents;
-  //ArrayList<Tag> children;
+  ArrayList<Tag> parents;
+  ArrayList<Tag> children;
 
   Tag(int id, String name) {
     this.id = id;
     this.name = name;
-    //this.parents = new ArrayList<Tag>();
-    //this.children = new ArrayList<Tag>();
+    this.parents = new ArrayList<Tag>();
+    this.children = new ArrayList<Tag>();
   }
 }

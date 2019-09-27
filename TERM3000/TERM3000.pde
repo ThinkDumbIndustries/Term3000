@@ -20,6 +20,7 @@ void setup() {
   loadDates();
 
   //initializeContext(new DateNavigatorContext(width, height));
+  initializeContext(new TreeTag(width, height));
 
   PSurfaceFX fx = (PSurfaceFX)surface;
   Canvas canvas = (Canvas) fx.getNative();

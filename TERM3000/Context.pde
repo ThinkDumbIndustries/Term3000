@@ -91,7 +91,7 @@ abstract class ConcreteContext implements Context {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
   }
-  boolean hasSize(int _WIDTH, int _HEIGHT) {
+  final boolean hasSize(int _WIDTH, int _HEIGHT) {
     return WIDTH == _WIDTH && HEIGHT == _HEIGHT;
   }
   void resize(int _WIDTH, int _HEIGHT) {

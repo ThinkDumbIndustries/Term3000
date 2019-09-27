@@ -23,12 +23,13 @@ class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
   ThumbableFile tfile;
   PImage thumbnail;
 
-  static final int 
+  static final int // could use enums instead
     ERROR     = 0, 
     WAITING   = 1, 
     LOADING   = 2, 
     SHRINKING = 3, 
     DONE      = 4;
+
   int status;
   int workerID;
   int priority;
