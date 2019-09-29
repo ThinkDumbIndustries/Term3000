@@ -171,6 +171,9 @@ abstract class SplitContextHandler extends ConcreteContext {
   void keyReleased() {
     ctxs[focusedId].keyReleased();
   }
+  void keyTyped() {
+    ctxs[focusedId].keyTyped();
+  }
 
   void display() {
     for (int i = 0; i < count; i++ )if (doResizeFlag[i]) {

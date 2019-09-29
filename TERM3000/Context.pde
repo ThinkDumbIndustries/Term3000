@@ -66,6 +66,9 @@ void keyPressed() {
 void keyReleased() {
   context.keyReleased();
 }
+void keyTyped() {
+  context.keyTyped();
+}
 
 interface Context {
   boolean hasSize(int _WIDTH, int _HEIGHT);
@@ -83,6 +86,7 @@ interface Context {
   void mouseWheel(MouseEvent event);
   void keyPressed();
   void keyReleased();
+  void keyTyped();
 }
 
 abstract class ConcreteContext implements Context {
@@ -125,6 +129,8 @@ abstract class ConcreteContext implements Context {
   void keyPressed() {
   }
   void keyReleased() {
+  }
+  void keyTyped() {
   }
 }
 
@@ -200,5 +206,8 @@ class TestContext extends ConcreteContext {
   }
   void keyReleased() {
     addLine("keyReleased: " + keyCode + " : " + key);
+  }
+  void keyTyped() {
+    addLine("keyTyped: " + keyCode + " : " + key);
   }
 }

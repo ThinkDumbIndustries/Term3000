@@ -26,6 +26,7 @@ void setupTagManager() {
   tagmanager = new TagManager();
   tagmanager.load();
   tagmanager.printt();
+  tagmanager.save();
 }
 
 class TagManager {
@@ -45,13 +46,13 @@ class TagManager {
     PrintWriter out = createWriter(ROOT + "/tags.csv");
     out.println(alltags.size());
     for (int i = 0; i < alltags.size(); i++) {
-      out.print(alltags.get(i).name);
-      for (Tag parent : alltags.get(i).parents) out.print("," + parent.id);
+      Tag tag = alltags.get(i);
+      out.print(tag.name + "," + tag.x + "," + tag.y);
+      for (Tag parent : tag.parents) out.print("," + parent.id);
       out.println();
     }    
     out.flush();
     out.close();
-    exit();
   }
 
   public void load() {
@@ -68,11 +69,14 @@ class TagManager {
         Tag tag = alltags.get(i);
         String[] split = split(in.readLine(), ',');
         tag.name = split[0];
-        for (int c = 1; c < split.length; c++) {
+        tag.x = float(split[1]);
+        tag.y = float(split[2]);
+        for (int c = 3; c < split.length; c++) {
           int parentId = int(split[c]);
+          Tag parent = alltags.get(parentId);
           makeASubtagOf(i, parentId);
-          alltags.get(i).parents.add(alltags.get(parentId));
-          alltags.get(parentId).children.add(alltags.get(i));
+          tag.parents.add(parent);
+          parent.children.add(tag);
         }
       }
     } 
@@ -83,17 +87,20 @@ class TagManager {
   }
 
   private void reduce() {
+    println();
+    println("   -----------   REDUCED REDUCED REDUCED   -----------   ");
+    println();
     for (Tag t : alltags) {
       t.parents = new ArrayList<Tag>();
       t.children = new ArrayList<Tag>();
     }
     for (int i = 0; i < alltags.size(); i++) {
       for (int j = 0; j < alltags.size(); j++) {
-        if (i == j) break;
-        if (!isASubtagOf(i, j)) break;
+        if (i == j) continue;
+        if (!isASubtagOf(i, j)) continue;
         boolean isPrimitive = true;
         for (int k = 0; k < alltags.size(); k++) {
-          if (k != i && k!= j && isASubtagOf(i, k) && isASubtagOf(k, j)) {
+          if (k != i && k != j && isASubtagOf(i, k) && isASubtagOf(k, j)) {
             isPrimitive = false;
             break;
           }
@@ -104,6 +111,7 @@ class TagManager {
         }
       }
     }
+    printt();
   }
 
   private void expand() {
@@ -138,6 +146,10 @@ class TagManager {
   }
 
   public void printt() {
+    for (Tag t : alltags) {
+      println(t.id + " , " + t.name);
+      for (Tag p : t.parents) println("   " + p.id + " , " + p.name);
+    }
     for (int i = 0; i < alltags.size(); i++) {
       for (int j = 0; j < alltags.size(); j++) {
         if (isASubtagOf(i, j)) print(" X");
@@ -146,6 +158,13 @@ class TagManager {
       println();
     }
     println();
+    println(alltags.size());
+    for (int i = 0; i < alltags.size(); i++) {
+      Tag tag = alltags.get(i);
+      print(tag.name + "," + tag.x + "," + tag.y);
+      for (Tag parent : tag.parents) print("," + parent.id);
+      println();
+    }
   }
 }
 
@@ -154,11 +173,14 @@ class Tag {
   String name;
   ArrayList<Tag> parents;
   ArrayList<Tag> children;
+  float x, y;
 
   Tag(int id, String name) {
     this.id = id;
     this.name = name;
     this.parents = new ArrayList<Tag>();
     this.children = new ArrayList<Tag>();
+    this.x = random(-5, 5);
+    this.y = random(-5, 5);
   }
 }
