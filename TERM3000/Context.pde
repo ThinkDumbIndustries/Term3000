@@ -25,8 +25,10 @@ void pushContext(Context _context) {
 }
 
 void popContext() {
-  if (contextHistory.isEmpty()) exit();
-  else {
+  if (contextHistory.isEmpty()) {
+    tagmanager.save();
+    exit();
+  } else {
     Context restored = contextHistory.pop();
     if (!restored.hasSize(width, height)) restored.resize(width, height);
     restored.flagEverythingForRepaint();

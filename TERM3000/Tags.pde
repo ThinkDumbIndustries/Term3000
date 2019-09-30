@@ -26,7 +26,7 @@ void setupTagManager() {
   tagmanager = new TagManager();
   tagmanager.load();
   tagmanager.printt();
-  tagmanager.save();
+  //tagmanager.save();
 }
 
 class TagManager {
@@ -115,14 +115,34 @@ class TagManager {
   }
 
   private void expand() {
+    reachable = new ArrayList<BitSet>(alltags.size());
+    for (int i = 0; i < alltags.size(); i++) reachable.add(new BitSet());
+    for (Tag t : alltags) for (Tag p : t.parents) makeASubtagOf(t.id, p.id);
+  }
+
+  public boolean isLonely(Tag t) {
+    return t.children.size() != 0 || t.parents.size() != 0;
+  }
+
+  void makeLonely(Tag tag) {
+    for (Tag t : tag.parents) t.children.remove(tag);
+    for (Tag t : tag.children) t.parents.remove(tag);
+    tag.children = new ArrayList<Tag>();
+    tag.parents = new ArrayList<Tag>();
+    tagmanager.expand();
+  }
+
+  void delete(Tag tag) {
+    for (int i = tag.id + 1; i < alltags.size(); i++) alltags.get(i).id --;
+    alltags.remove(tag);
   }
 
   public Tag addTag(String name) {
     Tag ntag = new Tag(alltags.size(), name);
-    ntag.parents.add(alltags.get(0));
+    //ntag.parents.add(alltags.get(0));
     alltags.add(ntag);
     BitSet bs = new BitSet();
-    bs.set(0); //Every tag is a child of source
+    //bs.set(0); //Every tag is a child of source
     reachable.add(bs);
     return ntag;
   }
@@ -166,7 +186,31 @@ class TagManager {
       println();
     }
   }
+  void update() {
+    for (Tag t : alltags) {
+      for (Tag p : t.parents) {
+        float dx = p.x - t.x;
+        float dy = p.y - t.y;
+        float d = sqrt(dx*dx + dy*dy);
+        final float MIN = 0.8;
+        final float MAX = 1.3;
+        float f = 0;
+        if (d < MIN) f = ((d - MIN) * ATTRCACTION) / d;
+        else if (d > MAX) f = ((d - MAX) * ATTRCACTION) / d;
+        t.apply(dx*f, dy*f);
+        f *= -0.1;
+        p.apply(dx*f, dy*f);
+      }
+    }
+    for (Tag t : alltags)t.update();
+  }
+  boolean needsReedraw() {
+    return true;
+  }
 }
+
+final float FRICTION = 0.9;
+final float ATTRCACTION = 0.01;
 
 class Tag {
   int id;
@@ -174,6 +218,8 @@ class Tag {
   ArrayList<Tag> parents;
   ArrayList<Tag> children;
   float x, y;
+  float sx, sy;
+  float totalForce;
 
   Tag(int id, String name) {
     this.id = id;
@@ -182,5 +228,18 @@ class Tag {
     this.children = new ArrayList<Tag>();
     this.x = random(-5, 5);
     this.y = random(-5, 5);
+    this.sx = 0;
+    this.sy = 0;
+  }
+  void update() {
+    sx *= FRICTION;
+    sy *= FRICTION;
+    x += sx;
+    y += sy;
+  }
+  void apply(float ax, float ay) {
+    sx += ax;
+    sy += ay;
+    totalForce += ax*ax + ay*ay;
   }
 }

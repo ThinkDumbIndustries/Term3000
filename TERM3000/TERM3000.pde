@@ -65,7 +65,7 @@ void showFrameCount() {
   textSize(20);
   textAlign(LEFT, TOP);
   blendMode(DIFFERENCE);
-  text(frameCount, 0, 0);
+  text(frameCount +"\n" + round(frameRate), 0, 0);
   blendMode(BLEND);
   popStyle();
 }
