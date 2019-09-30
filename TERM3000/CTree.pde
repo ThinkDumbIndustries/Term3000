@@ -31,14 +31,19 @@ class TreeTag extends ConcreteContext {
     if (!mousePressed) {
       tagHovered = null;
       tagDragged = null;
-      for (Tag t : tagmanager.alltags) if (dist(cam.mx, cam.my, t.x, t.y) < 0.15) tagHovered = t;
+      for (Tag t : tagmanager.alltags) {
+        if (dist(cam.mx, cam.my, t.x, t.y) < t.r) {
+          if (tagHovered != null && t.r > tagHovered.r) continue;
+          tagHovered = t;
+        }
+      }
     } else {
       if (tagHovered != null) {
         tagDragged = null;
         if (mouseButton == RIGHT) for (Tag t : tagmanager.alltags) {
           if (!tagmanager.isASubtagOf(tagHovered.id, t.id) &&
             !tagmanager.isASubtagOf(t.id, tagHovered.id) &&
-            dist(cam.mx, cam.my, t.x, t.y) < 0.3) tagDragged = t;
+            dist(cam.mx, cam.my, t.x, t.y) < 1.5*t.r) tagDragged = t;
         }
         if (tagDragged != null) {
           stroke(255, 0, 0);
@@ -88,16 +93,17 @@ class TreeTag extends ConcreteContext {
         fill(255);
         stroke(0);
       } else fill(0);
-      ellipse(t.x, t.y, 0.3, 0.3);
+      //t.computeSize();
+      ellipse(t.x, t.y, 2*t.r, 2*t.r);
       pushMatrix();
       translate(t.x, t.y);
-      float zoom = 200;
-      scale(1.0 / zoom);
+      float zoom = 35/t.r;
+      scale(1 / zoom);
       textAlign(CENTER, CENTER);
       if (t == tagClicked) fill(0);
       else fill(255);
       rectMode(CENTER);
-      text(t.name, 0, 0, 0.3 * zoom, 0.3 * zoom);
+      text(t.name, 0, 0, t.r*2 * zoom, t.r*2 * zoom);
       popMatrix();
     }
     popMatrix();
@@ -105,18 +111,31 @@ class TreeTag extends ConcreteContext {
     reedraw();
   }
   void displayConnection(Tag t, Tag p) {
-    line(t.x, t.y, p.x, p.y);
+    final float tr = t.r * .7;
+    final float pr = p.r * .7;
     float dx = p.x - t.x;
     float dy = p.y - t.y;
-    final int N = 3;
-    final float OUT = 0.13;
+    float d = sqrt(dx*dx + dy*dy);
+    float strokew = t.r * .8;
+    strokeWeight(strokew);
+    //line(t.x, t.y, p.x, p.y);
+    float arrowstrokew = strokew*.5;
+    int N = max(3, ceil((d - tr - pr) / arrowstrokew / 3));
+    final float OUT = strokew * .5 / d;
     pushStyle();
-    strokeCap(SQUARE);
+    strokeWeight(arrowstrokew);
+    strokeCap(PROJECT);
+    //stroke(255);
+    noFill();
     for (int i = 1; i < N; i++) {
       pushMatrix();
-      translate(t.x + dx*float(i)/N, t.y + dy*float(i)/N);
-      line(0, 0, OUT*(-dx-dy), OUT*(-dy+dx));
-      line(0, 0, OUT*(-dx+dy), OUT*(-dy-dx));
+      float mult = OUT*0.25 + (map(i, 0, N, tr, d - pr)) / d; 
+      translate(t.x + dx*mult, t.y + dy*mult);
+      beginShape();
+      vertex(OUT*(-dx-dy), OUT*(-dy+dx));
+      vertex(0, 0);
+      vertex(OUT*(-dx+dy), OUT*(-dy-dx));
+      endShape();
       popMatrix();
     }
     popStyle();
@@ -126,7 +145,7 @@ class TreeTag extends ConcreteContext {
   void mouseClicked() {
     tagClicked = null;
     if (mouseButton == CENTER) {
-      tagClicked = tagmanager.addTag("???");
+      tagClicked = tagmanager.addTag("");
       cam.updateMouse();
       tagClicked.x = cam.mx;
       tagClicked.y = cam.my;
@@ -135,11 +154,7 @@ class TreeTag extends ConcreteContext {
     }
   }
   void mouseReleased() {
-    if (tagHovered != null && tagDragged != null) {
-      tagmanager.makeASubtagOf(tagHovered.id, tagDragged.id);
-      tagmanager.reduce();
-      tagmanager.printt();
-    }
+    if (tagHovered != null && tagDragged != null) tagHovered.addParent(tagDragged);
   }
   void mouseMoved() {
   }
@@ -159,7 +174,6 @@ class TreeTag extends ConcreteContext {
       } else {
         String name = tagClicked.name; 
         if (key == BACKSPACE) {
-          println("JM");
           if (tagClicked.name.length() == 0) return;
           tagClicked.name = tagClicked.name.substring(0, tagClicked.name.length() - 1);
           reedraw();
