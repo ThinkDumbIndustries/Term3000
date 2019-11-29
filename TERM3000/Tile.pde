@@ -1,3 +1,7 @@
+interface Tilable {
+  Tile makeTile(int id);
+}
+
 abstract class Tile {
   TFile tfile;
   boolean selected;

@@ -11,7 +11,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 
 void setup() {
-  size(1600, 900, FX2D);
+  size(500, 300, FX2D);
   //fullScreen(FX2D);
   surface.setResizable(true);
 
@@ -20,13 +20,7 @@ void setup() {
   setupThumbnailWorkers();
   loadFiles();
   initializeContext(new TileGrid(width, height, 5));
-  //pushContext(new FullView(width, height, files, 137)); // temporary; for faster development
-  //initializeContext(HorizontalSplit(width, height, 10, new TestContext(width, height), 1.0, new TestContext(width, height), 1.0));
-  //initializeContext(HorizontalSplit(width, height, 10, new TestContext(width, height), 1.0, new TestContext(width, height), 1.0, new TestContext(width, height), 1.0));
-  //initializeContext(HorizontalSplitTest(width, height, 10, 5));
-  //initializeContext(VerticalSplitTest(width, height, 10, 5));
-  //initializeContext(HorizontalSplit(width, height, 10, new TileGrid(width, height, 5), 1.0, new TileGrid(width, height, 5), 1.0));
-  initializeContext(GridSplitTest(width, height, 10, 6, 4));
+  //initializeContext(new ListSelectContext(width, height, split("BEGIN ajj fdkl mjq kmf djsqf kd smq d kjkj dml q dksj fk ld jf dkj fj 143 fe  fd_uçà  yà u _çè io u_àè _çpuoi ujpi è pmq s END", ' ')));
 
   PSurfaceFX fx = (PSurfaceFX)surface;
   Canvas canvas = (Canvas) fx.getNative();
@@ -41,7 +35,7 @@ void setup() {
 }
 
 boolean resize_happened = true;
-boolean repaint_background = true;
+//boolean repaint_background = true;
 
 void draw() {
   if (!reedraw) {

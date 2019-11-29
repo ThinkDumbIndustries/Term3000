@@ -1,4 +1,10 @@
-class TImage extends TThumbable {
+/*
+G prefix for 'groupment of classes', notably:
+ + class TImage extends TThumbable 
+ + class ImageContext extends ConcreteContext
+ */
+
+class TImage extends ThumbableFile {
   TImage(String _location) {
     this.location = _location;
   }
@@ -23,8 +29,7 @@ class ImageContext extends ConcreteContext {
   }
 
   void resize(int _WIDTH, int _HEIGHT) {
-    this.WIDTH = _WIDTH;
-    this.HEIGHT = _HEIGHT;
+    super.resize(_WIDTH, _HEIGHT);
     scale = min(float(WIDTH)/full.width, float(HEIGHT)/full.height);
   }
 

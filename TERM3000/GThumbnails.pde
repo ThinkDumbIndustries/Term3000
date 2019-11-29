@@ -1,11 +1,26 @@
+/*
+G prefix for 'groupment of classes', notably:
+ + abstract class TThumbable extends TFile 
+ + class ThumbableTile extends Tile implements Comparable<ThumbableTile>
+ + class ThumbnailWorker extends Thread
+ */
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import processing.video.*;
 
+abstract class ThumbableFile extends TFile implements Tilable {
+  String getThumbnailAbsoluteLocation() {
+    int indx = location.lastIndexOf('.');
+    return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
+    //return ROOT + "/thumbnailstif/" + location.substring(0, indx) + ".tif";
+  }
+}
+
 class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
-  TThumbable tfile;
+  ThumbableFile tfile;
   PImage thumbnail;
 
   static final int 
@@ -19,7 +34,7 @@ class ThumbableTile extends Tile implements Comparable<ThumbableTile> {
   int priority;
   int id;
 
-  ThumbableTile(TThumbable _tfile, int _id) {
+  ThumbableTile(ThumbableFile _tfile, int _id) {
     super(_tfile);
     this.tfile = _tfile;
     this.id = _id;
