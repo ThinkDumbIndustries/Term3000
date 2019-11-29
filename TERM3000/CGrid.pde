@@ -10,12 +10,14 @@ class TileGrid extends ConcreteContext {
   int MAX_LINE;
   ScrollBar bar;
 
+  ThumbableFile[] files;
   Tile[] tiles;
 
   boolean repaint_background;
 
-  TileGrid(int _WIDTH, int _HEIGHT, int _TILES_PER_LINE) {
+  TileGrid(int _WIDTH, int _HEIGHT, int _TILES_PER_LINE, ThumbableFile[] _files) {
     super(_WIDTH, _HEIGHT);
+    this.files = _files;
     //setupColorTiles();
     setupTiles(files);
     setTilesPerLine(_TILES_PER_LINE, true);
@@ -35,8 +37,8 @@ class TileGrid extends ConcreteContext {
     tiles[tiles.length-1] = new ColorTile(null, color(255, 255, 0));
   }
 
-  TileGrid(int _WIDTH, int _HEIGHT) {
-    this(_WIDTH, _HEIGHT, 5);
+  TileGrid(int _WIDTH, int _HEIGHT, ThumbableFile[] _files) {
+    this(_WIDTH, _HEIGHT, 5, _files);
   }
 
   void resize(int _WIDTH, int _HEIGHT) {
@@ -118,7 +120,7 @@ class TileGrid extends ConcreteContext {
     } else {
       Tile t = tiles[indx];
       if (t.tfile == null) return; // if ColorTile or TextTile, no tfile exists
-      pushContext(new FullView(WIDTH, HEIGHT, files, indx));
+      pushContext(new FullView(width, height, files, indx));
     }
   }
 
@@ -144,6 +146,7 @@ class TileGrid extends ConcreteContext {
 
   void flagEverythingForRepaint() {
     for (int i = 0; i< tiles.length; i++) tiles[i].repaint = true;
+    repaint_background = true;
   }
 
   void display() {

@@ -35,6 +35,7 @@ class ListSelectContext extends ConcreteContext {
     LINES_PER_SCREEN = 1 + (HEIGHT - 1 + LINE_MARGIN) / TILE_HEIGHT;
 
     MAX_LINE = max(0, (boxes.length - 1) - LINES_PER_SCREEN + 2);
+    current_line = constrain(current_line, 0, MAX_LINE);
     bar = new ScrollBar(MAX_LINE, SCROLL_BAR_WIDTH, HEIGHT, float(LINES_PER_SCREEN) / (MAX_LINE + LINES_PER_SCREEN));
     setLine(current_line); // important for setting visible up
   }

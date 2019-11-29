@@ -1,3 +1,10 @@
+/*
+Here are the classes this file contains:
+ - abstract class SplitContextHandler extends ConcreteContext
+ - class HorizontalSplit extends SplitContextHandler
+ - class VerticalSplit extends SplitContextHandler
+ */
+
 abstract class SplitContextHandler extends ConcreteContext {
   static final int
     FOCUS_ON_HOVER = 0, 
@@ -65,6 +72,10 @@ abstract class SplitContextHandler extends ConcreteContext {
     this.focusMode = mode;
   }
 
+  void deconstruct() {
+    for (int i = 0; i < count; i++) ctxs[i].deconstruct();
+  }
+
   abstract int getSizee();
   abstract int getSizeePerp();
   abstract void resizee(int id);
@@ -111,14 +122,23 @@ abstract class SplitContextHandler extends ConcreteContext {
   void mousePressed() {
     dividerPressed = dividerId != -1; 
     if (focusMode == FOCUS_ON_CLICK) focusedId = hoveredId; 
-    if (!dividerPressed) ctxs[focusedId].mousePressed();
+    if (dividerPressed) return;
+    addMouse(-poses[focusedId] - DIVIDER_THICKNESS);
+    ctxs[focusedId].mousePressed();
+    addMouse(poses[focusedId] + DIVIDER_THICKNESS);
   }
   void mouseReleased() {
-    if (!dividerPressed) ctxs[focusedId].mouseReleased(); 
+    if (!dividerPressed) {
+      addMouse(-poses[focusedId] - DIVIDER_THICKNESS);
+      ctxs[focusedId].mouseReleased();
+      addMouse(poses[focusedId] + DIVIDER_THICKNESS);
+    }
     dividerPressed = false;
   }
   void mouseClicked() {
+    addMouse(-poses[focusedId] - DIVIDER_THICKNESS);
     ctxs[focusedId].mouseClicked(); // this might be dangerous. It could cause clicks outside the screen
+    addMouse(poses[focusedId] + DIVIDER_THICKNESS);
   }
   void mouseMoved() {
     dividerId = -1; 

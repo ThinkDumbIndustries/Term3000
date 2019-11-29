@@ -40,7 +40,7 @@ class FullView extends ConcreteContext {
   void keyPressed() {
     int old_indx = indx;
     if (keyCode == LEFT) indx = max(0, indx - 1);
-    else if (keyCode == RIGHT) indx = min(indx + 1, files.length - 1);
+    else if (keyCode == RIGHT) indx = min(indx + 1, tfiles.length - 1);
     else {
       ctx.keyPressed();
       return;

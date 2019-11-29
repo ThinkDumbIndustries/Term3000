@@ -31,6 +31,7 @@ class MovieContext extends ConcreteContext {
 
   void deconstruct() {
     mov.stop();
+    mov = null;
   }
 
   boolean show_navbar = false;
