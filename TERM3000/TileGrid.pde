@@ -1,6 +1,6 @@
 final int MIN_SCROLL_BAR_WIDTH = 10;
 
-class TileGrid extends Context {
+class TileGrid extends ConcreteContext {
   final float IMAGE_RATIO = 3.0 / 4;
   int TILE_WIDTH, TILE_HEIGHT;
   int TILES_PER_LINE;
@@ -11,6 +11,8 @@ class TileGrid extends Context {
   ScrollBar bar;
 
   Tile[] tiles;
+
+  boolean repaint_background;
 
   TileGrid(int _WIDTH, int _HEIGHT, int _TILES_PER_LINE) {
     super(_WIDTH, _HEIGHT);
@@ -152,6 +154,12 @@ class TileGrid extends Context {
   }
 
   void display() {
+    if (repaint_background) {
+      fill(0);
+      noStroke();
+      rect(0, 0, WIDTH, HEIGHT);
+    }
+    repaint_background = false;
     pushMatrix();
     for (int j = 0; j < LINES_PER_SCREEN; j++) {
       pushMatrix();

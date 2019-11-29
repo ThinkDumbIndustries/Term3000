@@ -39,7 +39,7 @@ abstract class TFile implements Contextable {
   abstract Tile makeTile(int id);
 
   Context toContext(int _WIDTH, int _HEIGHT) {
-    return new BlankContext(_WIDTH, _HEIGHT);
+    return new TestContext(_WIDTH, _HEIGHT); // Not ideal, best to have an error context maybe?
   }
 }
 

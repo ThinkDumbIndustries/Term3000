@@ -28,7 +28,7 @@ void popContext() {
   if (contextHistory.isEmpty()) exit();
   else {
     Context restored = contextHistory.pop();
-    if (restored.WIDTH != width || restored.HEIGHT != height) restored.resize(width, height);
+    if (!restored.hasSize(width, height)) restored.resize(width, height);
     restored.flagEverythingForRepaint();
     repaint_background = true;
     if (context != null) {
@@ -43,7 +43,7 @@ void mousePressed() {
   context.mousePressed();
 }
 void mouseClicked() {
-  context.mousePressed();
+  context.mouseClicked();
 }
 void mouseReleased() {
   context.mouseReleased();
@@ -67,15 +67,42 @@ void keyReleased() {
   context.keyReleased();
 }
 
-abstract class Context {
+interface Context {
+  boolean hasSize(int _WIDTH, int _HEIGHT);
+  void resize(int _WIDTH, int _HEIGHT);
+  int minWidth();
+  int minHeight();
+  void deconstruct();
+  void flagEverythingForRepaint();
+  void display();
+  void mousePressed();
+  void mouseClicked();
+  void mouseReleased();
+  void mouseMoved();
+  void mouseDragged();
+  void mouseWheel(MouseEvent event);
+  void keyPressed();
+  void keyReleased();
+}
+
+abstract class ConcreteContext implements Context {
   int WIDTH, HEIGHT;
-  Context(int _WIDTH, int _HEIGHT) {
+  ConcreteContext(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  boolean hasSize(int _WIDTH, int _HEIGHT) {
+    return WIDTH == _WIDTH && HEIGHT == _HEIGHT;
   }
   void resize(int _WIDTH, int _HEIGHT) {
     this.WIDTH = _WIDTH;
     this.HEIGHT = _HEIGHT;
+  }
+  int minWidth() {
+    return 128;
+  }
+  int minHeight() {
+    return 128;
   }
   void deconstruct() {
   }
@@ -107,11 +134,71 @@ interface Contextable {
   Context toContext(int _WIDTH, int _HEIGHT);
 }
 
-class BlankContext extends Context {
-  BlankContext(int _WIDTH, int _HEIGHT) {
+class TestContext extends ConcreteContext {
+  String[] lines;
+  int pos = 0;
+  TestContext(int _WIDTH, int _HEIGHT) {
     super(_WIDTH, _HEIGHT);
+    lines = new String[] {"", "", "", "", "", ""};
   }
+
+  void resize(int _WIDTH, int _HEIGHT) {
+    super.resize(_WIDTH, _HEIGHT);
+    addLine("resize: " + _WIDTH + "x"+ _HEIGHT);
+  }
+
   void display() {
-    background(0);
+    pushStyle();
+    pushMatrix();
+    noStroke();
+    fill(64);
+    rect(0, 0, WIDTH, HEIGHT);
+    fill(255);
+    ellipse(WIDTH*.5, HEIGHT*.5, WIDTH, HEIGHT);
+    fill(220);
+    ellipse(WIDTH*.5, HEIGHT*.5, minWidth(), minHeight());
+    fill(0);
+    textAlign(CENTER, CENTER);
+    text(join(lines, '\n'), 0, 0, WIDTH, HEIGHT);
+    popStyle();
+    popMatrix();
+  }
+
+  void addLine(String line) {
+    lines[pos] = line;
+    pos = (pos + 1) % lines.length;
+    reedraw();
+  }
+
+
+  void deconstruct() {
+    addLine("deconstruct");
+  }
+  void flagEverythingForRepaint() {
+    addLine("flagEverythingForRepaint");
+  }
+  void mousePressed() {
+    addLine("mousePressed: " + mouseX + "," + mouseY);
+  }
+  void mouseClicked() {
+    addLine("mouseClicked: " + mouseX + "," + mouseY);
+  }
+  void mouseReleased() {
+    addLine("mouseReleased: " + mouseX + "," + mouseY);
+  }
+  void mouseMoved() {
+    addLine("mouseMoved: " + mouseX + "," + mouseY);
+  }
+  void mouseDragged() {
+    addLine("mouseDragged: " + mouseX + "," + mouseY);
+  }
+  void mouseWheel(MouseEvent event) {
+    addLine("mouseWheel: " + event.getCount());
+  }
+  void keyPressed() {
+    addLine("keyPressed: " + keyCode + " : " + key);
+  }
+  void keyReleased() {
+    addLine("keyReleased: " + keyCode + " : " + key);
   }
 }

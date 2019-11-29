@@ -12,7 +12,7 @@ class TImage extends TThumbable {
   }
 }
 
-class ImageContext extends Context {
+class ImageContext extends ConcreteContext {
   PImage full;
   float scale;
 
