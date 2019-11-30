@@ -9,7 +9,7 @@ import java.util.Comparator;
 
 ThumbableFile[] loadThumbableFiles(String folderLocation) {
   File folder = new File(ROOT + "/" + folderLocation);
-  println("Looking for files in: " + folder.getAbsolutePath());
+  //println("Looking for files in: " + folder.getAbsolutePath());
   File[] children = folder.listFiles();
   Arrays.sort(children, new FileComparator());
   ThumbableFile[] files = new ThumbableFile[children.length];

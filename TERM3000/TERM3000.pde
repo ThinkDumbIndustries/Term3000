@@ -1,3 +1,11 @@
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
+import com.drew.metadata.exif.ExifReader;
+import com.drew.metadata.iptc.IptcReader;
+
 //String ROOT = "C:/Users/felix/Pictures/Photos";
 String ROOT = "C:/Users/Maximilien/Pictures/Photos";
 int MAX_THUMBNAIL_WORKERS = 4;

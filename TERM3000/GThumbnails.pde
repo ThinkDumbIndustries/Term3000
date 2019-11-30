@@ -12,6 +12,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 import processing.video.*;
 
 abstract class ThumbableFile extends TFile implements Tilable {
+  String getAbsoluteLocation() {
+    return ROOT + "/" + location;
+  }
   String getThumbnailAbsoluteLocation() {
     int indx = location.lastIndexOf('.');
     return ROOT + "/thumbnails/" + location.substring(0, indx) + ".jpg";
@@ -144,10 +147,14 @@ class ThumbnailWorker extends Thread {
       if (!thumbnail.exists()) {
 
         PImage full;
+        int orientation = 0;
 
         String runtimeClassName = tile.tfile.getClass().getSimpleName();
-        if (runtimeClassName.equals("TImage")) full = loadImg(ROOT + "/" + tile.tfile.location);
-        else if (runtimeClassName.equals("TMovie")) {
+        if (runtimeClassName.equals("TImage")) {
+          full = loadImg(ROOT + "/" + tile.tfile.location);
+          orientation = ((TImage)tile.tfile).getOrientation();
+          println(orientation);
+        } else if (runtimeClassName.equals("TMovie")) {
           // Movie stuffs!
           Movie mov = new Movie(SKETCH, ROOT + "/" + tile.tfile.location);
           mov.play();
@@ -169,7 +176,6 @@ class ThumbnailWorker extends Thread {
         int scale = floor(sqrt(full.pixels.length / 80000));
         int nw = full.width / scale;
         int nh = full.height / scale;
-        tile.thumbnail = createImage(nw, nh, RGB);
 
         //println("scaling by factor of scale " + scale);
         //println("shrinking "+tile.image.location);
@@ -179,12 +185,25 @@ class ThumbnailWorker extends Thread {
         println("x"+scale+" : "+full.width+"x"+full.height+" => "+nw+"x"+nh);
 
         full.resize(nw, nh);
-        tile.thumbnail = full.copy();
+        //tile.thumbnail = full.copy();
+        if (orientation % 2 == 0) tile.thumbnail = createImage(nw, nh, RGB);
+        else tile.thumbnail = createImage(nh, nw, RGB);
+
+        if (orientation == 0) tile.thumbnail = full.copy();
+        else {
+          //tile.thumbnail.loadPixels();
+          //println(orientation);
+          int n = full.pixels.length;
+          if (orientation == 1) for (int i = 0; i < n; i++) tile.thumbnail.pixels[i] = full.pixels[(i*(nw)+(i/nh))%n];
+          if (orientation == 3) for (int i = 0; i < n; i++) tile.thumbnail.pixels[n-i-1] = full.pixels[(i*(nw)+(i/nh))%n];
+          if (orientation == 2) for (int i = 0; i < n; i++) tile.thumbnail.pixels[i] = full.pixels[n-i-1];
+          tile.thumbnail.updatePixels();
+        }
 
         setStatus(ThumbableTile.DONE);
 
         //SAVE
-        full.save(thumbnail.getAbsolutePath());
+        tile.thumbnail.save(thumbnail.getAbsolutePath());
         g.removeCache(full);
         full = null;
         System.gc();
