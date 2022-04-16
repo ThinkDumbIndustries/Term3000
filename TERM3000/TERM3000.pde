@@ -1,5 +1,6 @@
 //String ROOT = "C:/Users/felix/Pictures/Photos";
-String ROOT = "C:/Users/Maximilien/Pictures/Photos";
+//String ROOT = "C:/Users/Maximilien/Pictures/Photos";
+String ROOT = "/Users/maximilientirard/Desktop/Pictures from Ubuntu SSD Asus Laptop";
 int MAX_THUMBNAIL_WORKERS = 4;
 
 PApplet SKETCH = this;
